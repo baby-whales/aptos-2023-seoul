@@ -1,8 +1,22 @@
 [package]
 name = "text-client"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]]
+name = "client"
+path = "src/main.rs"
+
 [dependencies]
+actix-web = "4.2.1"
+awc = "3.0.1"
+env_logger = "0.10.0"
+futures-util = { version = "0.3.25", features = ["sink"] }
+log = "0.4.17"
+tokio = { version = "1.24.2", features = ["full"] }
+tokio-stream = "0.1.11"
+# futures-util = { workspace = true, features = ["sink"] }
+# tokio = { workspace = true, features = ["full"] }
+# tokio-stream = "0.1.8"
