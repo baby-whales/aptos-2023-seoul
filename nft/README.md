@@ -7,6 +7,13 @@
 
 * https://aptos.dev/cli-tools/build-aptos-cli
 
+## install on mac
+
+* brew install pnpm
+* pnpm install
+* pnpm run simple_nft
+* pnpm run simple_nft2
+* 
 ## 작동하는지 확인 
 
 ```bash

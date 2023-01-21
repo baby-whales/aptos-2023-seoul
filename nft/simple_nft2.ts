@@ -8,11 +8,18 @@ dotenv.config();
 
 import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS } from "aptos";
 import { OptionalTransactionArgs } from "aptos";
-import { NODE_URL, FAUCET_URL } from "./common";
-import { AnyNumber, bcsToBytes, Bytes, Uint8 , Uint16 } from "./bcs";
-import { MAX_U64_BIG_INT } from "./bcs/consts";
-import { HexString, MaybeHexString } from "./hex_string";
+import { HexString,MaybeHexString } from "aptos";
 
+import { NODE_URL, FAUCET_URL } from "./common";
+import { AnyNumber, Bytes, Uint8 , Uint16 } from "./bcs";
+import { MAX_U64_BIG_INT } from "./bcs/consts";
+//import { HexString, MaybeHexString } from "./hex_string";
+
+//const PRIVATE_KEY = "0x059476ec5425e7878cd6d85250cf66a17539e9ccea89e25a00292c7a102a53af";
+//const PUBLIC_ADDRESS = "0x0f51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34";
+
+const PRIVATE_KEY = "0x28a44b352e5f6dbc93cfbaae325aa8a68e99b401f54fee19ea03fd6ba4ab7633";
+const PUBLIC_ADDRESS = "0xaf58703596ab584b8dc13f88fa09eca1b97eb11b74d042dcabd07fd0b269d6a2";
 
   /**
    * Creates a new NFT collection within the specified account
@@ -201,7 +208,10 @@ async function createCannedbiToken(client: AptosClient,
 
   // Create accounts.
   // :!:>section_2
-  const alice = new AptosAccount();
+  // TODO private key 로 생성하기 
+  const alice_private_key = new HexString(PRIVATE_KEY);
+  const alice = new AptosAccount(alice_private_key.toUint8Array(),PUBLIC_ADDRESS);
+  //const alice = new AptosAccount();
   const bob = new AptosAccount(); // <:!:section_2
 
   // Print out account addresses.
