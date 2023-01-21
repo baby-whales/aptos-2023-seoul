@@ -6,8 +6,107 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient } from "aptos";
+import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS } from "aptos";
+import { OptionalTransactionArgs } from "aptos";
 import { NODE_URL, FAUCET_URL } from "./common";
+import { AnyNumber, bcsToBytes, Bytes, Uint8 , Uint16 } from "./bcs";
+import { MAX_U64_BIG_INT } from "./bcs/consts";
+import { HexString, MaybeHexString } from "./hex_string";
+
+
+  /**
+   * Creates a new NFT collection within the specified account
+   *
+   * @param account AptosAccount where collection will be created
+   * @param name Collection name
+   * @param description Collection description
+   * @param uri URL to additional info about collection
+   * @param maxAmount Maximum number of `token_data` allowed within this collection
+   * @returns The hash of the transaction submitted to the API
+   */
+  // :!:>createCollection
+  async function createCollection(
+    client: AptosClient,
+    tokenClient : TokenClient,
+    account: AptosAccount,
+    name: string,
+    description: string,
+    uri: string,
+    maxAmount: AnyNumber = MAX_U64_BIG_INT,
+    extraArgs?: OptionalTransactionArgs,
+  ): Promise<string> {
+    // <:!:createCollection
+    const payload = tokenClient.transactionBuilder.buildTransactionPayload(
+      "0x3::token::create_collection_script",
+      [],
+      [name, description, uri, maxAmount, [false, false, false]],
+    );
+
+    return client.generateSignSubmitTransaction(account, payload, extraArgs);
+  }
+
+/**
+   * Creates a new NFT within the specified account
+   *
+   * @param account AptosAccount where token will be created
+   * @param collectionName Name of collection, that token belongs to
+   * @param name Token name
+   * @param description Token description
+   * @param supply Token supply
+   * @param uri URL to additional info about token
+   * @param max The maxium of tokens can be minted from this token
+   * @param royalty_payee_address the address to receive the royalty, the address can be a shared account address.
+   * @param royalty_points_denominator the denominator for calculating royalty
+   * @param royalty_points_numerator the numerator for calculating royalty
+   * @param property_keys the property keys for storing on-chain properties
+   * @param property_values the property values to be stored on-chain
+   * @param property_types the type of property values
+   * @param mutability_config configs which field is mutable
+   * @returns The hash of the transaction submitted to the API
+   */
+  // :!:>createToken
+  async function createTokenWithMutabilityConfig(
+    client: AptosClient,
+    tokenClient : TokenClient,
+    account: AptosAccount,
+    collectionName: string,
+    name: string,
+    description: string,
+    supply: AnyNumber,
+    uri: string,
+    max: AnyNumber = MAX_U64_BIG_INT,
+    royalty_payee_address: MaybeHexString = account.address(),
+    royalty_points_denominator: AnyNumber = 0,
+    royalty_points_numerator: AnyNumber = 0,
+    property_keys: Array<string> = [],
+    property_values: Array<Bytes> = [],
+    property_types: Array<string> = [],
+    mutability_config: Array<boolean> = [false, false, false, false, false],
+    extraArgs?: OptionalTransactionArgs,
+  ): Promise<string> {
+    // <:!:createToken
+    const payload = tokenClient.transactionBuilder.buildTransactionPayload(
+      "0x3::token::create_token_script",
+      [],
+      [
+        collectionName,
+        name,
+        description,
+        supply,
+        max,
+        uri,
+        royalty_payee_address,
+        royalty_points_denominator,
+        royalty_points_numerator,
+        mutability_config,
+        property_keys,
+        property_values,
+        property_types,
+      ],
+    );
+
+    return client.generateSignSubmitTransaction(account, payload, extraArgs);
+  }
 
 /**
   * Creates a new NFT within the specified account
@@ -31,29 +130,38 @@ import { NODE_URL, FAUCET_URL } from "./common";
 async function createCannedbiToken(client: AptosClient,
   tokenClient: TokenClient,account: AptosAccount, collectionName: string,
   name: string, description: string, uri_cap: string, uri_decap: string,
-  capped: boolean, stat1: number, stat2: number, stat3: number, stat4: number,
-  badge1: number) : Promise<void> {
+  capped: boolean, stat1: Uint8, stat2: Uint8, stat3: Uint8, stat4: Uint8,
+  badge1: Uint16) : Promise<void> {
   
     console.log(name);
-    const txnHash2 = await tokenClient.createToken(
+    const txnHash2 = await createTokenWithMutabilityConfig(
+      client,
+      tokenClient,
       account,
       collectionName,
       name,
-      "Alice's simple token1",
-      1,
-      "https://aptos.dev/img/nyan.jpeg",
-      1,
+      description,//"Cannedbi First NFT",
+      1,//supply,
+      uri_cap,//"https://www.cannedbi.com",
+      1,//max,
       account.address(),
       100,
       5,
-      ["uri_capp","uri_decap","capped", "stat1", "stat2", "stat3", "stat4", "badge1"],
-      [ uri_cap, uri_decap, capped.toString(), stat1.toString(), stat2.toString(), stat3.toString(), stat4.toString(), badge1.toString()],
-      ["string","string","bool", "int", "int", "int", "int", "int"]
+      ["uri_cap","uri_decap","capped", "stat1", "stat2", "stat3", "stat4", "badge1"],
+      [ BCS.bcsSerializeStr(uri_cap), 
+        BCS.bcsSerializeStr(uri_decap), 
+        BCS.bcsSerializeBool(capped), 
+        BCS.bcsSerializeU8(stat1),
+        BCS.bcsSerializeU8(stat2),
+        BCS.bcsSerializeU8(stat3),
+        BCS.bcsSerializeU8(stat4),
+        BCS.bcsSerializeU16(badge1)
+      ],
+      ["string","string","bool", "Uint8", "Uint8", "Uint8", "Uint8", "Uint16"],
+      [false,false,false,false,true],
     ); // <:!:section_5
     await client.waitForTransaction(txnHash2, { checkSuccess: true });
   
-    const collectionData = await tokenClient.getCollectionData(account.address(), collectionName);
-  console.log(`Alice's collection: ${JSON.stringify(collectionData, null, 4)}`); // <:!:section_6
 
     //const tokenData = await tokenClient.getTokenData(account.address(), collectionName, name);
     //console.log(`Alice's token data: ${JSON.stringify(tokenData, null, 4)}`); // <:!:section_8
@@ -130,49 +238,33 @@ async function createCannedbiToken(client: AptosClient,
 
   // Create the collection.
   // :!:>section_4
-  const txnHash1 = await tokenClient.createCollection(
-    alice,
-    collectionName,
-    "Alice's simple collection",
-    "https://alice.com",
-  ); // <:!:section_4
+  // const txnHash1 = await tokenClient.createCollection(
+  //   alice,
+  //   collectionName,
+  //   "Alice's simple collection",
+  //   "https://alice.com",
+  // ); // <:!:section_4
+  // await client.waitForTransaction(txnHash1, { checkSuccess: true });
+
+  const txnHash1 = await createCollection(client,tokenClient,alice, collectionName, 
+    "Cannedbi NFT collection", "https://cannedbi.com");
   await client.waitForTransaction(txnHash1, { checkSuccess: true });
 
-  // Create a token in that collection.
-  // :!:>section_5
-  await createCannedbiToken(client,tokenClient,alice, collectionName, tokenName, "Alice's simple token1", "https://aptos.dev/img/nyan1.jpeg", "https://aptos.dev/img/nyan.jpeg", true, 1, 2, 3, 4, 5);
-  await createCannedbiToken(client,tokenClient,alice, collectionName, tokenName2, "Alice's simple token2", "https://aptos.dev/img/nyan1.jpeg", "https://aptos.dev/img/nyan.jpeg", true, 1, 2, 3, 4, 5);
-  /*
-  const txnHash2 = await tokenClient.createToken(
-    alice,
-    collectionName,
-    tokenName,
-    "Alice's simple token",
-    1,
-    "https://aptos.dev/img/nyan.jpeg",
-  ); // <:!:section_5
-  await client.waitForTransaction(txnHash2, { checkSuccess: true });
-
-  // Print the collection data.
-  // :!:>section_6
   const collectionData = await tokenClient.getCollectionData(alice.address(), collectionName);
   console.log(`Alice's collection: ${JSON.stringify(collectionData, null, 4)}`); // <:!:section_6
 
-  
-  // Get the token balance.
-  // :!:>section_7
-  const aliceBalance1 = await tokenClient.getToken(
-    alice.address(),
-    collectionName,
-    tokenName,
-    `${tokenPropertyVersion}`,
-  );
-  console.log(`Alice's token balance: ${aliceBalance1["amount"]}`); // <:!:section_7
+  // Create a token in that collection.
+  // :!:>section_5
+  await createCannedbiToken(client,tokenClient,alice, collectionName, tokenName, 
+      "Cannedbi NFT #1", 
+      "ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/0001.png", 
+      "ipfs://bafybeibcbiix4xlnydklnfg3ympksr6cio4d2muwmulznvd5ep7k7fbzqe/0001.png", 
+      true, 1, 2, 3, 4, 5);
+  await createCannedbiToken(client,tokenClient,alice, collectionName, tokenName2, 
+      "Cannedbi NFT #2", 
+      "ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/0002.png", 
+      "ipfs://bafybeibcbiix4xlnydklnfg3ympksr6cio4d2muwmulznvd5ep7k7fbzqe/0002.png", 
+      true, 1, 2, 3, 4, 5);
 
-  // Get the token data.
-  // :!:>section_8
-  const tokenData = await tokenClient.getTokenData(alice.address(), collectionName, tokenName);
-  console.log(`Alice's token data: ${JSON.stringify(tokenData, null, 4)}`); // <:!:section_8
-    */
 
 })();
