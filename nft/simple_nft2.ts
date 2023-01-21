@@ -115,6 +115,42 @@ const PUBLIC_ADDRESS = "0xaf58703596ab584b8dc13f88fa09eca1b97eb11b74d042dcabd07f
     return client.generateSignSubmitTransaction(account, payload, extraArgs);
   }
 
+    /**
+   * creator mutates the properties of the tokens
+   *
+   * @param account AptosAccount who modifies the token properties
+   * @param tokenOwner the address of account owning the token
+   * @param creator the creator of the token
+   * @param collection_name the name of the token collection
+   * @param tokenName the name of created token
+   * @param propertyVersion the property_version of the token to be modified
+   * @param amount the number of tokens to be modified
+   *
+   * @returns The hash of the transaction submitted to the API
+   */
+  async function mutateTokenProperties(
+      client: AptosClient,
+      tokenClient : TokenClient,
+      account: AptosAccount,
+      tokenOwner: HexString,
+      creator: HexString,
+      collection_name: string,
+      tokenName: string,
+      propertyVersion: AnyNumber,
+      amount: AnyNumber,
+      keys: Array<string>,
+      values: Array<Bytes>,
+      types: Array<string>,
+      extraArgs?: OptionalTransactionArgs,
+    ): Promise<string> {
+      const payload = tokenClient.transactionBuilder.buildTransactionPayload(
+        "0x3::token::mutate_token_properties",
+        [],
+        [tokenOwner, creator, collection_name, tokenName, propertyVersion, amount, keys, values, types],
+      );
+  
+      return client.generateSignSubmitTransaction(account, payload, extraArgs);
+    }
 /**
   * Creates a new NFT within the specified account
   *
@@ -210,8 +246,8 @@ async function createCannedbiToken(client: AptosClient,
   // :!:>section_2
   // TODO private key 로 생성하기 
   const alice_private_key = new HexString(PRIVATE_KEY);
-  const alice = new AptosAccount(alice_private_key.toUint8Array(),PUBLIC_ADDRESS);
-  //const alice = new AptosAccount();
+  //const alice = new AptosAccount(alice_private_key.toUint8Array(),PUBLIC_ADDRESS);
+  const alice = new AptosAccount();
   const bob = new AptosAccount(); // <:!:section_2
 
   // Print out account addresses.
@@ -277,4 +313,32 @@ async function createCannedbiToken(client: AptosClient,
       true, 1, 2, 3, 4, 5);
 
 
+         // default token property is configured to be mutable and then alice can make bob burn token after token creation
+    // test mutate Bob's token properties and allow owner to burn this token
+    // let a = await mutateTokenProperties(
+    //   client,tokenClient,
+    //   alice,
+    //   alice.address(),
+    //   alice.address(),
+    //   collectionName,
+    //   tokenName,
+    //   0,
+    //   1,
+    //   ["uri_cap","uri_decap","capped", "stat1", "stat2", "stat3", "stat4", "badge1"],
+    //   [ BCS.bcsSerializeStr("uri"), 
+    //     BCS.bcsSerializeStr("uri"), 
+    //     BCS.bcsSerializeBool(false), 
+    //     BCS.bcsSerializeU8(2),
+    //     BCS.bcsSerializeU8(2),
+    //     BCS.bcsSerializeU8(2),
+    //     BCS.bcsSerializeU8(2),
+    //     BCS.bcsSerializeU16(2)
+    //   ],
+    //   ["string","string","bool", "Uint8", "Uint8", "Uint8", "Uint8", "Uint16"],
+    // );
+    // await client.waitForTransactionWithResult(a);
+
+    // const tokenData = await tokenClient.getTokenData(alice.address(), collectionName, tokenName);
+    // console.log(`Alice's token data: ${JSON.stringify(tokenData, null, 4)}`); // <:!:section_8
+  
 })();
