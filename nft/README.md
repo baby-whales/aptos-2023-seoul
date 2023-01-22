@@ -24,3 +24,8 @@ pnpm run simple_nft
 ## mint nfts
 
 
+## query
+
+* https://cloud.hasura.io/public/graphiql?endpoint=https://indexer-devnet.staging.gcp.aptosdev.com/v1/graphql
+* 어떻게 조회하는지 알아봐야 함
+

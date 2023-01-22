@@ -6,9 +6,12 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS } from "aptos";
-import { OptionalTransactionArgs } from "aptos";
-import { HexString,MaybeHexString } from "aptos";
+//import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS } from "aptos";
+import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
+//import { OptionalTransactionArgs } from "aptos";
+import { OptionalTransactionArgs } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
+//import { HexString,MaybeHexString } from "aptos";
+import { HexString,MaybeHexString } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
 
 import { NODE_URL, FAUCET_URL } from "./common";
 import { AnyNumber, Bytes, Uint8 , Uint16 } from "./bcs";
@@ -143,6 +146,8 @@ const PUBLIC_ADDRESS = "0xaf58703596ab584b8dc13f88fa09eca1b97eb11b74d042dcabd07f
       types: Array<string>,
       extraArgs?: OptionalTransactionArgs,
     ): Promise<string> {
+
+      //console.log("mutateTokenProperties:", tokenOwner, creator, collection_name, tokenName, propertyVersion, amount, keys, values, types, "");
       const payload = tokenClient.transactionBuilder.buildTransactionPayload(
         "0x3::token::mutate_token_properties",
         [],
@@ -200,7 +205,7 @@ async function createCannedbiToken(client: AptosClient,
         BCS.bcsSerializeU8(stat4),
         BCS.bcsSerializeU16(badge1)
       ],
-      ["string","string","bool", "Uint8", "Uint8", "Uint8", "Uint8", "Uint16"],
+      ["string","string","bool", "u8", "u8", "u8", "u8", "u16"],
       [false,false,false,false,true],
     ); // <:!:section_5
     await client.waitForTransaction(txnHash2, { checkSuccess: true });
@@ -313,32 +318,30 @@ async function createCannedbiToken(client: AptosClient,
       true, 1, 2, 3, 4, 5);
 
 
-         // default token property is configured to be mutable and then alice can make bob burn token after token creation
-    // test mutate Bob's token properties and allow owner to burn this token
-    // let a = await mutateTokenProperties(
-    //   client,tokenClient,
-    //   alice,
-    //   alice.address(),
-    //   alice.address(),
-    //   collectionName,
-    //   tokenName,
-    //   0,
-    //   1,
-    //   ["uri_cap","uri_decap","capped", "stat1", "stat2", "stat3", "stat4", "badge1"],
-    //   [ BCS.bcsSerializeStr("uri"), 
-    //     BCS.bcsSerializeStr("uri"), 
-    //     BCS.bcsSerializeBool(false), 
-    //     BCS.bcsSerializeU8(2),
-    //     BCS.bcsSerializeU8(2),
-    //     BCS.bcsSerializeU8(2),
-    //     BCS.bcsSerializeU8(2),
-    //     BCS.bcsSerializeU16(2)
-    //   ],
-    //   ["string","string","bool", "Uint8", "Uint8", "Uint8", "Uint8", "Uint16"],
-    // );
-    // await client.waitForTransactionWithResult(a);
+    let a = await mutateTokenProperties(
+      client,tokenClient,
+      alice,
+      alice.address(),
+      alice.address(),
+      collectionName,
+      tokenName,
+      0,
+      1,
+      ["uri_cap","uri_decap","capped", "stat1", "stat2", "stat3", "stat4", "badge1"],
+      [ BCS.bcsSerializeStr("uri"), 
+        BCS.bcsSerializeStr("uri"), 
+        BCS.bcsSerializeBool(false), 
+        BCS.bcsSerializeU8(2),
+        BCS.bcsSerializeU8(2),
+        BCS.bcsSerializeU8(2),
+        BCS.bcsSerializeU8(2),
+        BCS.bcsSerializeU16(2)
+      ],
+      ["string","string","bool", "u8", "u8", "u8", "u8", "u16"],
+    );
+    await client.waitForTransactionWithResult(a);
 
-    // const tokenData = await tokenClient.getTokenData(alice.address(), collectionName, tokenName);
-    // console.log(`Alice's token data: ${JSON.stringify(tokenData, null, 4)}`); // <:!:section_8
+    const tokenData = await tokenClient.getTokenData(alice.address(), collectionName, tokenName);
+    console.log(`Alice's token data: ${JSON.stringify(tokenData, null, 4)}`); // <:!:section_8
   
 })();
