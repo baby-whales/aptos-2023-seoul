@@ -9,6 +9,8 @@
     "simple_nft": "ts-node simple_nft.ts",
     "simple_nft2": "ts-node simple_nft2.ts",
     "mint_cannedbi": "ts-node mint_cannedbi.ts",
+    "mutate_cannedbi": "ts-node mutate_cannedbi.ts",
+    "get_cannedbi": "ts-node get_cannedbi.ts",
     "transfer_coin": "ts-node transfer_coin.ts",
     "test": "run-s bcs_transaction multisig_transaction simple_nft transfer_coin",
     "your_coin": "ts-node your_coin.ts"

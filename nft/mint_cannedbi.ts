@@ -177,8 +177,8 @@ async function createCannedbiToken(client: AptosClient,
         BCS.bcsSerializeU16(badge1)
       ],
       ["string","string","bool", "u8", "u8", "u8", "u8", "u16"],
-      [false,false,false,false,true],
-    ); // <:!:section_5
+      [false,true,true,true,true],// 1,uri,royalty,description, properies
+    ); 
     await client.waitForTransaction(txnHash2, { checkSuccess: true });
   
 
@@ -192,13 +192,13 @@ async function createCannedbiToken(client: AptosClient,
     name,
     `${tokenPropertyVersion}`,
   );
-  console.log(`Alice's token balance: ${aliceBalance1["amount"]}`); 
-  console.log("Alice's token : ",aliceBalance1); 
+  console.log(`Token balance: ${aliceBalance1["amount"]}`); 
+  console.log("Token : ",aliceBalance1); 
 
   // Get the token data.
   // :!:>section_8
   const tokenData = await tokenClient.getTokenData(account.address(), collectionName, name);
-  console.log(`Alice's token data: ${JSON.stringify(tokenData, null, 4)}`); 
+  console.log(`Token data: ${JSON.stringify(tokenData, null, 4)}`); 
 
 
 }
@@ -217,34 +217,27 @@ async function createCannedbiToken(client: AptosClient,
   const coinClient = new CoinClient(client);
 
   // Create accounts.
-  // :!:>section_2
-  // TODO private key 로 생성하기 
+  // private key 로 생성하기 
   const alice_private_key = new HexString(PRIVATE_KEY);
-  //const alice = new AptosAccount(alice_private_key.toUint8Array(),PUBLIC_ADDRESS);
-  const alice = new AptosAccount();
-  const bob = new AptosAccount(); // <:!:section_2
-
+  const alice = new AptosAccount(alice_private_key.toUint8Array(),PUBLIC_ADDRESS);
+  //const alice = new AptosAccount();
+  
   // Print out account addresses.
   console.log("=== Addresses ===");
   console.log(`Alice: ${alice.address()}`);
-  console.log(`Bob: ${bob.address()}`);
   console.log("");
 
   // Fund accounts.
-  // :!:>section_3
   await faucetClient.fundAccount(alice.address(), 100_000_000);
-  await faucetClient.fundAccount(bob.address(), 100_000_000); // <:!:section_3
 
   console.log("=== Initial Coin Balances ===");
   console.log(`Alice: ${await coinClient.checkBalance(alice)}`);
-  console.log(`Bob: ${await coinClient.checkBalance(bob)}`);
   console.log("");
 
   console.log("=== Creating Collection and Token ===");
 
-  const collectionName = "Alice's";
+  const collectionName = "Cannedbi NFT Collection #2" ;
  
-
   // create cannedbi collection
   const txnHash1 = await createCollection(client,tokenClient,alice, collectionName, 
     "Cannedbi NFT collection", "https://cannedbi.com");
