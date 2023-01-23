@@ -236,7 +236,7 @@ async function createCannedbiToken(client: AptosClient,
 
   console.log("=== Creating Collection and Token ===");
 
-  const collectionName = "Cannedbi NFT Collection #2" ;
+  const collectionName = "Cannedbi NFT Collection #3" ;
  
   // create cannedbi collection
   const txnHash1 = await createCollection(client,tokenClient,alice, collectionName, 

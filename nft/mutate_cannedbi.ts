@@ -106,7 +106,7 @@ async function mutateTokenProperties(
     console.log(`Alice: ${await coinClient.checkBalance(alice)}`);
     console.log("");
 
-    const collectionName = "Cannedbi NFT Collection #2";
+    const collectionName = "Cannedbi NFT Collection #3";
 
     const collectionData = await tokenClient.getCollectionData(alice.address(), collectionName);
     console.log(`Cannedbi collection: ${JSON.stringify(collectionData, null, 4)}`); // <:!:section_6
@@ -136,6 +136,9 @@ async function mutateTokenProperties(
 
         await faucetClient.fundAccount(alice.address(), 100_000_000);
         console.log(`Balance: ${await coinClient.checkBalance(alice)}`);
+
+        /// Mutate the token_properties of one token.
+        //public fun mutate_one_token(
 
         let a = await mutateTokenProperties(
             client,tokenClient,
