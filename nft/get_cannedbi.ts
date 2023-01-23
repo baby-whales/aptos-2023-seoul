@@ -61,17 +61,25 @@ const PUBLIC_ADDRESS = "0xaf58703596ab584b8dc13f88fa09eca1b97eb11b74d042dcabd07f
     const tokenName = "Cannedbi #"+idx;
     //const description = "Cannedbi NFT #"+idx;
 
-    //const tokenPropertyVersion = 0;
-    // const tokenId = {
-    //     token_data_id: {
-    //         creator: alice.address().hex(),
-    //         collection: collectionName,
-    //         name: tokenName,
-    //     },
-    //     property_version: `${tokenPropertyVersion}`,
-    // };
+
 
     const tokenData = await tokenClient.getTokenData(alice.address(), collectionName, tokenName);
     console.log(`Cannedbi token data: ${JSON.stringify(tokenData, null, 4)}`); // <:!:section_8
+
+    const tokenPropertyVersion = 0;
+    const tokenId = {
+        token_data_id: {
+            creator: alice.address().hex(),
+            collection: collectionName,
+            name: tokenName,
+        },
+        property_version: `${tokenPropertyVersion}`,
+    };
+
+    const tokenData2 = await tokenClient.getTokenForAccount(alice.address(), tokenId);
+    console.log(`Cannedbi token data: ${JSON.stringify(tokenData2, null, 4)}`); // <:!:section_8
+
+    
+
     
 })();
