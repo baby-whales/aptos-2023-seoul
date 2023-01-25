@@ -1,0 +1,10 @@
+# aptos
+.aptos
+
+# Move Build Output
+build/
+
+# Move coverage and tracing information
+.trace
+*.mvcov
+

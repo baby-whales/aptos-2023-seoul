@@ -1,0 +1,40 @@
+[package]
+name = "deploy"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# aptos-sdk = { git = "https://github.com/aptos-labs/aptos-core", branch = "mainnet" }
+# aptos-framework = { git = "https://github.com/aptos-labs/aptos-core", branch = "mainnet" }
+
+#aptos-sdk = { git = "https://github.com/aptos-labs/aptos-core", branch = "devnet" }
+#aptos-framework = { git = "https://github.com/aptos-labs/aptos-core", branch = "devnet" }
+#aptos-cached-packages = { git = "https://github.com/aptos-labs/aptos-core", branch = "devnet" }
+
+aptos = { path = "../../../../aptos-core/crates/aptos" }
+#framework = { path = "../../../aptos-core/framework" }
+#framework = { path = "../../../framework" }
+
+# aptos = { path = "../../crates/aptos" }
+# aptos-crypto = { path = "../../crates/aptos-crypto", features = ["fuzzing"] }
+# aptos-gas = { path = "../aptos-gas", features = ["testing"] }
+# aptos-keygen = { path = "../../crates/aptos-keygen" }
+# aptos-logger = { path = "../../crates/aptos-logger" }
+# aptos-parallel-executor = { path = "../parallel-executor" }
+# aptos-state-view = { path = "../../storage/state-view" }
+# aptos-types = { path = "../../types", features = ["fuzzing"] }
+# aptos-vm = { path = "../aptos-vm", features = ["fuzzing"] }
+# cached-packages = { path = "../framework/cached-packages" }
+# framework = { path = "../framework" }
+# package-builder = { path = "../package-builder" }
+# vm-genesis = { path = "../vm-genesis" }
+
+#aptos-crypto = { path = "../../../../aptos-core/crates/aptos-crypto"}
+hex = "0.4.3"
+url = "2.3.1"
+anyhow = "1.0.68"
+tokio = { version = "1.24.2", features = ["full"] }
+
+

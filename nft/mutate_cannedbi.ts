@@ -140,6 +140,7 @@ async function mutateTokenProperties(
         /// Mutate the token_properties of one token.
         //public fun mutate_one_token(
 
+        // TODO 안된다 ㅎ 
         let a = await mutateTokenProperties(
             client,tokenClient,
             alice,
@@ -147,7 +148,7 @@ async function mutateTokenProperties(
             alice.address(),
             collectionName,
             tokenName,
-            0,
+            1,//tokenPropertyVersion,
             1,
             ["uri_cap","uri_decap","capped", "stat1", "stat2", "stat3", "stat4", "badge1"],
             [ BCS.bcsSerializeStr(uri_cap), 
