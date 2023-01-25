@@ -20,6 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "aptos": "latest",
+    "cache": "^3.0.0",
     "dotenv": "16.0.1"
   },
   "devDependencies": {

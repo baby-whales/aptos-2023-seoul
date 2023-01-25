@@ -16,6 +16,7 @@ import { HexString,MaybeHexString } from "../../aptos-core/ecosystem/typescript/
 import { NODE_URL, FAUCET_URL } from "./common";
 import { AnyNumber, Bytes, Uint8 , Uint16 } from "./bcs";
 import { MAX_U64_BIG_INT } from "./bcs/consts";
+import { WalletClient } from "./wallet_client";
 //import { HexString, MaybeHexString } from "./hex_string";
 
 //const PRIVATE_KEY = "0x059476ec5425e7878cd6d85250cf66a17539e9ccea89e25a00292c7a102a53af";
@@ -34,6 +35,8 @@ const PUBLIC_ADDRESS = "0xaf58703596ab584b8dc13f88fa09eca1b97eb11b74d042dcabd07f
 
     // Create a coin client for checking account balances.
     const coinClient = new CoinClient(client);
+
+    const walletClient = new WalletClient(NODE_URL,FAUCET_URL);
 
     // Create accounts.
     const alice_private_key = new HexString(PRIVATE_KEY);
@@ -71,59 +74,34 @@ const PUBLIC_ADDRESS = "0xaf58703596ab584b8dc13f88fa09eca1b97eb11b74d042dcabd07f
     const tokenData = await tokenClient.getTokenData(alice.address(), collectionName, tokenName);
     console.log(`Cannedbi token data: ${JSON.stringify(tokenData, null, 4)}`); // <:!:section_8
 
-    const tokenPropertyVersion = 0;
-    const tokenId = {
-        token_data_id: {
-            creator: alice.address().hex(),
-            collection: collectionName,
-            name: tokenName,
-        },
-        property_version: `${tokenPropertyVersion}`,
-    };
+    const res1 = await walletClient.getTokenStoreResources(alice.address().toString());
+    console.log("=== Token Store Resources ===");
+    console.log(`Alice: ${JSON.stringify(res1, null, 4)}`);
 
-    // /// global unique identifier of a token
-    // struct TokenId has store, copy, drop {
-    //     /// the id to the common token data shared by token with different property_version
-    //     token_data_id: TokenDataId,
-    //     /// The version of the property map; when a fungible token is mutated, a new property version is created and assigned to the token to make it an NFT
-    //     property_version: u64,
-    // }
+    const res2 = await walletClient.getTokenIds(alice.address().toString());
+    console.log("=== Token Ids ===");
+    console.log(`Alice: ${JSON.stringify(res2, null, 4)}`);
 
-    // /// globally unique identifier of tokendata
-    // struct TokenDataId has copy, drop, store {
-    //     /// The address of the creator, eg: 0xcafe
-    //     creator: address,
-    //     /// The name of collection; this is unique under the same account, eg: "Aptos Animal Collection"
-    //     collection: String,
-    //     /// The name of the token; this is the same as the name field of TokenData
-    //     name: String,
-    // }
+    const res3 = await walletClient.getTokens(alice.address().toString());
+    console.log("=== Tokens ===");
+    console.log(`Alice: ${JSON.stringify(res3, null, 4)}`);
+    
+    // const tokenPropertyVersion = 0;
+    // const tokenId = {
+    //     token_data_id: {
+    //         creator: alice.address().hex(),
+    //         collection: collectionName,
+    //         name: tokenName,
+    //     },
+    //     property_version: `${tokenPropertyVersion}`,
+    // };
 
-    // /// Represents token resources owned by token owner
-    // struct TokenStore has key {
-    //     /// the tokens owned by a token owner
-    //     tokens: Table<TokenId, Token>,
-    //     direct_transfer: bool,
-    //     deposit_events: EventHandle<DepositEvent>,
-    //     withdraw_events: EventHandle<WithdrawEvent>,
-    //     burn_events: EventHandle<BurnTokenEvent>,
-    //     mutate_token_property_events: EventHandle<MutateTokenPropertyMapEvent>,
-    // }
 
-    // /// Represent collection and token metadata for a creator
-    // struct Collections has key {
-    //     collection_data: Table<String, CollectionData>,
-    //     token_data: Table<TokenDataId, TokenData>,
-    //     create_collection_events: EventHandle<CreateCollectionEvent>,
-    //     create_token_data_events: EventHandle<CreateTokenDataEvent>,
-    //     mint_token_events: EventHandle<MintTokenEvent>,
-    // }
+    //const tokenData2 = await tokenClient.getTokenForAccount(alice.address(), tokenId);
+    //console.log(`Cannedbi token data: ${JSON.stringify(tokenData2, null, 4)}`); // <:!:section_8
 
-    const tokenData2 = await tokenClient.getTokenForAccount(alice.address(), tokenId);
-    console.log(`Cannedbi token data: ${JSON.stringify(tokenData2, null, 4)}`); // <:!:section_8
-
-    const tokenData3 = await tokenClient.getTokenForAccount(bob.address(), tokenId);
-    console.log(`Cannedbi token data: ${JSON.stringify(tokenData3, null, 4)}`); // <:!:section_8
+    //const tokenData3 = await tokenClient.getTokenForAccount(bob.address(), tokenId);
+    //console.log(`Cannedbi token data: ${JSON.stringify(tokenData3, null, 4)}`); // <:!:section_8
     
 
     
