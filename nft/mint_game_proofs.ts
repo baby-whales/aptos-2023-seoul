@@ -7,11 +7,11 @@ import dotenv from "dotenv";
 dotenv.config();
 
 //import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS } from "aptos";
-import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS } from "./dist/index";
+import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
 //import { OptionalTransactionArgs } from "aptos";
-import { OptionalTransactionArgs } from "./dist/index";
+import { OptionalTransactionArgs } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
 //import { HexString,MaybeHexString } from "aptos";
-import { HexString,MaybeHexString } from "./dist/index";
+import { HexString,MaybeHexString } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
 
 import { NODE_URL, FAUCET_URL } from "./common";
 import { AnyNumber, Bytes, Uint8 , Uint16 } from "./bcs";
@@ -136,9 +136,9 @@ function zeroPad(num :number, places:number) {
 * @param collectionName Name of collection, that token belongs to
 * @param name Token name
 * @param description Token description
-* @param uri_cap URL to additional info about token
-* @param uri_decap URL to additional info about token
-* @param capped capped state of token
+* @param supply supply 
+* @param max max 
+* @param uri URL to additional info about token
 * @param stat1 stat1 of token
 * @param stat2 stat2 of token
 * @param stat3 stat3 of token
@@ -146,11 +146,10 @@ function zeroPad(num :number, places:number) {
 * @param stat4 stat4 of token
 * @param badge1 count of badge1 of token
 */
-async function createCannedbiToken(client: AptosClient,
+async function createBadgeToken(client: AptosClient,
   tokenClient: TokenClient,account: AptosAccount, collectionName: string,
-  name: string, description: string, uri_cap: string, uri_decap: string,
-  capped: boolean, stat1: Uint8, stat2: Uint8, stat3: Uint8, stat4: Uint8,
-  badge1: Uint16) : Promise<void> {
+  name: string, description: string, supply : AnyNumber , max : AnyNumber,uri: string, 
+    stat1: Uint8, stat2: Uint8, stat3: Uint8, stat4: Uint8) : Promise<void> {
   
     console.log(name);
     const txnHash2 = await createTokenWithMutabilityConfig(
@@ -160,23 +159,20 @@ async function createCannedbiToken(client: AptosClient,
       collectionName,
       name,
       description,
-      1,//supply,
-      uri_cap,//"https://www.cannedbi.com",
-      1,//max,
+      supply,//supply,
+      uri,//,
+      max,//max,
       account.address(),
       100,
-      5,
-      ["uri_cap","uri_decap","capped", "stat1", "stat2", "stat3", "stat4", "badge1"],
-      [ BCS.bcsSerializeStr(uri_cap), 
-        BCS.bcsSerializeStr(uri_decap), 
-        BCS.bcsSerializeBool(capped), 
+      1,
+      ["stat1", "stat2", "stat3", "stat4"],
+      [ 
         BCS.bcsSerializeU8(stat1),
         BCS.bcsSerializeU8(stat2),
         BCS.bcsSerializeU8(stat3),
-        BCS.bcsSerializeU8(stat4),
-        BCS.bcsSerializeU16(badge1)
+        BCS.bcsSerializeU8(stat4)
       ],
-      ["string","string","bool", "u8", "u8", "u8", "u8", "u16"],
+      ["u8", "u8", "u8", "u8"],
       [false,true,true,true,true],// 1,uri,royalty,description, properies
     ); 
     await client.waitForTransaction(txnHash2, { checkSuccess: true });
@@ -236,31 +232,30 @@ async function createCannedbiToken(client: AptosClient,
 
   console.log("=== Creating Collection and Token ===");
 
-  const collectionName = "Cannedbi NFT Collection #3" ;
+  const collectionName = "Cannedbi Badge Collection #1" ;
  
   // create cannedbi collection
   const txnHash1 = await createCollection(client,tokenClient,alice, collectionName, 
-    "Cannedbi NFT collection", "https://cannedbi.com");
+    "Cannedbi Badge collection", "https://cannedbi.com");
   await client.waitForTransaction(txnHash1, { checkSuccess: true });
 
   const collectionData = await tokenClient.getCollectionData(alice.address(), collectionName);
-  console.log(`Cannedbi's collection: ${JSON.stringify(collectionData, null, 4)}`); 
+  console.log(`Cannedbi's Badge collection: ${JSON.stringify(collectionData, null, 4)}`); 
 
   const maxMintCount = 10;
 
   for (let idx = 1; idx <= maxMintCount; idx++) {
 
-    const tokenName = "Cannedbi #"+idx;
-    const description = "Cannedbi NFT #"+idx;
+    const tokenName = "Cannedbi Badge #"+idx;
+    const description = "Cannedbi Badge #"+idx;
 
     const idxStr = zeroPad(idx, 4);
-    const uri_cap = "ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/"+idxStr+".png";
-    const uri_decap = "ipfs://bafybeibcbiix4xlnydklnfg3ympksr6cio4d2muwmulznvd5ep7k7fbzqe/"+idxStr+".png";
-    await createCannedbiToken(client,tokenClient,alice, collectionName, tokenName, 
+    const uri = "ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/"+idxStr+".png";
+    await createBadgeToken(client,tokenClient,alice, collectionName, tokenName, 
       description,
-      uri_cap, 
-      uri_decap, 
-      true, getRandomInt(10), getRandomInt(10), getRandomInt(10), getRandomInt(10), 0);
+      1000,10000,
+      uri, 
+      getRandomInt(10), getRandomInt(10), getRandomInt(10), getRandomInt(10));
   }
   
 })();

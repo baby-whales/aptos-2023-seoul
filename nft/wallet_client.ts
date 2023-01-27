@@ -210,6 +210,8 @@ export class WalletClient {
       depositStart,
       withdrawStart
     );
+    console.log("tokenIds:" + tokenIds);
+    
     const tokens = [];
     await Promise.all(
       tokenIds.map(async (tokenId) => {
