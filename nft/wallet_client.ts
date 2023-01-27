@@ -198,7 +198,7 @@ export class WalletClient {
    * @param address address of the desired account
    * @returns list of tokens and their collection data
    */
-  async getTokens(
+  async   (
     address: string,
     limit?: number,
     depositStart?: number,
@@ -211,7 +211,7 @@ export class WalletClient {
       withdrawStart
     );
     console.log("tokenIds:" + tokenIds);
-    
+
     const tokens = [];
     await Promise.all(
       tokenIds.map(async (tokenId) => {
