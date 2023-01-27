@@ -19,11 +19,12 @@ import { MAX_U64_BIG_INT } from "./bcs/consts";
 import { WalletClient } from "./wallet_client";
 //import { HexString, MaybeHexString } from "./hex_string";
 
-//const PRIVATE_KEY = "0x059476ec5425e7878cd6d85250cf66a17539e9ccea89e25a00292c7a102a53af";
-//const PUBLIC_ADDRESS = "0x0f51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34";
+// wdshin's dev token
+const PRIVATE_KEY = "0x059476ec5425e7878cd6d85250cf66a17539e9ccea89e25a00292c7a102a53af";
+const PUBLIC_ADDRESS = "0x0f51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34";
 
-const PRIVATE_KEY = "0x28a44b352e5f6dbc93cfbaae325aa8a68e99b401f54fee19ea03fd6ba4ab7633";
-const PUBLIC_ADDRESS = "0xaf58703596ab584b8dc13f88fa09eca1b97eb11b74d042dcabd07fd0b269d6a2";
+//const PRIVATE_KEY = "0x28a44b352e5f6dbc93cfbaae325aa8a68e99b401f54fee19ea03fd6ba4ab7633";
+//const PUBLIC_ADDRESS = "0xaf58703596ab584b8dc13f88fa09eca1b97eb11b74d042dcabd07fd0b269d6a2";
 
 (async () => {
     // Create API and faucet clients.
@@ -58,7 +59,7 @@ const PUBLIC_ADDRESS = "0xaf58703596ab584b8dc13f88fa09eca1b97eb11b74d042dcabd07f
     console.log(`Bob: ${await coinClient.checkBalance(bob)}`);
     console.log("");
 
-    const collectionName = "Cannedbi NFT Collection #3";
+    const collectionName = "Cannedbi Badge Collection #1";
 
     const collectionData = await tokenClient.getCollectionData(alice.address(), collectionName);
     console.log(`Cannedbi collection: ${JSON.stringify(collectionData, null, 4)}`); 
@@ -68,7 +69,7 @@ const PUBLIC_ADDRESS = "0xaf58703596ab584b8dc13f88fa09eca1b97eb11b74d042dcabd07f
     // });
 
     const idx = 1;
-    const tokenName = "Cannedbi #"+idx;
+    const tokenName = "Cannedbi Badge #"+idx;
     //const description = "Cannedbi NFT #"+idx;
 
     const tokenData = await tokenClient.getTokenData(alice.address(), collectionName, tokenName);
@@ -82,9 +83,9 @@ const PUBLIC_ADDRESS = "0xaf58703596ab584b8dc13f88fa09eca1b97eb11b74d042dcabd07f
     console.log("=== Token Ids ===");
     console.log(`Alice: ${JSON.stringify(res2, null, 4)}`);
 
-    //const res3 = await walletClient.getTokens(alice.address().toString());
-    //console.log("=== Tokens ===");
-    //console.log(`Alice: ${JSON.stringify(res3, null, 4)}`);
+    const res3 = await walletClient.getTokens(alice.address().toString());
+    console.log("=== Tokens ===");
+    console.log(`Alice: ${JSON.stringify(res3, null, 4)}`);
     
     // const tokenPropertyVersion = 0;
     // const tokenId = {
