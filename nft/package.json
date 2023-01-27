@@ -11,6 +11,10 @@
     "mint_cannedbi": "ts-node mint_cannedbi.ts",
     "mutate_cannedbi": "ts-node mutate_cannedbi.ts",
     "get_cannedbi": "ts-node get_cannedbi.ts",
+    "mint_badges": "ts-node mint_badges.ts",
+    "get_badges": "ts-node get_badges.ts",
+    "mint_game_proofs": "ts-node mint_game_proofs.ts",
+    "get_proofs": "ts-node get_proofs.ts", 
     "transfer_coin": "ts-node transfer_coin.ts",
     "test": "run-s bcs_transaction multisig_transaction simple_nft transfer_coin",
     "your_coin": "ts-node your_coin.ts"

@@ -82,9 +82,9 @@ const PUBLIC_ADDRESS = "0xaf58703596ab584b8dc13f88fa09eca1b97eb11b74d042dcabd07f
     console.log("=== Token Ids ===");
     console.log(`Alice: ${JSON.stringify(res2, null, 4)}`);
 
-    //const res3 = await walletClient.getTokens(alice.address().toString());
-    //console.log("=== Tokens ===");
-    //console.log(`Alice: ${JSON.stringify(res3, null, 4)}`);
+    const res3 = await walletClient.getTokens(alice.address().toString());
+    console.log("=== Tokens ===");
+    console.log(`Alice: ${JSON.stringify(res3, null, 4)}`);
     
     // const tokenPropertyVersion = 0;
     // const tokenId = {
