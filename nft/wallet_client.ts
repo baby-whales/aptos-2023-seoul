@@ -241,6 +241,9 @@ export class WalletClient {
               tableItemRequest
             );
             
+          console.log(`getTableItem: ${JSON.stringify(token, null, 4)}`);
+    
+
           token.collection = tokenId.data.token_data_id.collection;
           tokens.push({ token, sequence_number: tokenId.sequence_number });
         } catch (e) {
