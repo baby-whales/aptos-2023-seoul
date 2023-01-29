@@ -1,6 +1,35 @@
 
 
-# CANNEDBI NFT
+# CANNEDBI 
+
+## resource  account
+
+```bash
+aptos account create-resource-account --seed 1234
+Do you want to submit a transaction for a range of [149800 - 224700] Octas at a gas unit price of 100 Octas? [yes/no] >
+yes
+{
+  "Result": {
+    "resource_account": "19faef9a696da006e997a8f476ee0cb76beb4991085a7547f9902ec2cd6333b4",
+    "transaction_hash": "0x4e4fbe8fcd70ab0196f7b6e4e416e0c08f4798fc7f6cb99c8b5e96829512e284",
+    "gas_used": 1533,
+    "gas_unit_price": 100,
+    "sender": "0f51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34",
+    "sequence_number": 23,
+    "success": true,
+    "timestamp_us": 1674974786549793,
+    "version": 6358726,
+    "vm_status": "Executed successfully"
+  }
+}
+```
+
+## tests
+
+```bash
+aptos move test --named-addresses cannedbi=default,source_addr=default
+```
+
 
 ## compile move
 

@@ -1,5 +1,5 @@
 [package]
-name = "CANNEDBI NFT"
+name = "CANNEDBI"
 version = "0.0.1"
 upgrade_policy = "compatible"
 
@@ -13,10 +13,9 @@ upgrade_policy = "compatible"
 AptosFramework = { local = "../../../aptos-core/aptos-move/framework/aptos-framework/"}
 AptosToken = { local = "../../../aptos-core/aptos-move/framework/aptos-token/"}
 
-
-
-
 [addresses]
-cannedbi_nft = "_"
-deployer = "_"
+cannedbi = "_"
+#deployer = "_"
+# change it to `source_addr = "_" when calling `create-resource-account-and-publish-package` from the cli
+source_addr = "_"
 
