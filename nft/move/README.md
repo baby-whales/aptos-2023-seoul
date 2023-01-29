@@ -2,6 +2,30 @@
 
 # CANNEDBI 
 
+## CanCoin
+
+## Cannedbi NFT
+
+## Cannedbi Badge Token
+
+
+## Cannedbi Game Proof
+
+## Cannedbi Shop
+
+* 어드민에 의해서 파는 아이템들을 파는 숍
+
+## Cannedbi Marketplace
+
+* NFT, Badge 를 올려서 public 대상으로 사고 파는 경매장
+
+
+## Cannedbi SNS private key store
+
+* 생각만 하는 중...
+* facebook auth token 으로 private key 의 절반을 저장해 둔다?
+
+
 ## resource  account
 
 ```bash
