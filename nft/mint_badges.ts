@@ -215,9 +215,10 @@ async function createBadgeToken(client: AptosClient,
 
   // Create accounts.
   // private key 로 생성하기 
-  const alice_private_key = new HexString(PRIVATE_KEY);
-  const alice = new AptosAccount(alice_private_key.toUint8Array(),PUBLIC_ADDRESS);
-  //const alice = new AptosAccount();
+  //const alice_private_key = new HexString(PRIVATE_KEY);
+  //const alice = new AptosAccount(alice_private_key.toUint8Array(),PUBLIC_ADDRESS);
+  const alice = new AptosAccount();
+  const bob = new AptosAccount();
   
   // Print out account addresses.
   console.log("=== Addresses ===");
@@ -226,6 +227,7 @@ async function createBadgeToken(client: AptosClient,
 
   // Fund accounts.
   await faucetClient.fundAccount(alice.address(), 100_000_000);
+  await faucetClient.fundAccount(bob.address(), 100_000_000); // <:!:section_3
 
   console.log("=== Initial Coin Balances ===");
   console.log(`Alice: ${await coinClient.checkBalance(alice)}`);
@@ -256,6 +258,78 @@ async function createBadgeToken(client: AptosClient,
       1000,10000,
       uri, 
       getRandomInt(10), getRandomInt(10), getRandomInt(10), getRandomInt(10));
+      
+    const tokenPropertyVersion = 0;
+    const tokenId = {
+      token_data_id: {
+        creator: alice.address().hex(),
+        collection: collectionName,
+        name: tokenName,
+      },
+      property_version: `${tokenPropertyVersion}`,
+    };
+  
+  // Alice offers one token to Bob.
+  console.log("\n=== Transferring the token to Bob ===");
+  // :!:>section_9
+  const txnHash3 = await tokenClient.offerToken(
+    alice,
+    bob.address(),
+    alice.address(),
+    collectionName,
+    tokenName,
+    1,
+    tokenPropertyVersion,
+  ); // <:!:section_9
+  await client.waitForTransaction(txnHash3, { checkSuccess: true });
+
+  // Bob claims the token Alice offered him.
+  // :!:>section_10
+  const txnHash4 = await tokenClient.claimToken(
+    bob,
+    alice.address(),
+    alice.address(),
+    collectionName,
+    tokenName,
+    tokenPropertyVersion,
+  ); // <:!:section_10
+  await client.waitForTransaction(txnHash4, { checkSuccess: true });
+
+  // Print their balances.
+  const aliceBalance2 = await tokenClient.getToken(
+    alice.address(),
+    collectionName,
+    tokenName,
+    `${tokenPropertyVersion}`,
+  );
+  const bobBalance2 = await tokenClient.getTokenForAccount(bob.address(), tokenId);
+  console.log(`Alice's token balance: ${aliceBalance2["amount"]}`);
+  console.log(`Bob's token balance: ${bobBalance2["amount"]}`);
+
+  console.log("\n=== Transferring the token ===");
+  // :!:>section_11
+  let txnHash5 = await tokenClient.directTransferToken(
+    alice,
+    bob,
+    alice.address(),
+    collectionName,
+    tokenName,
+    1,
+    tokenPropertyVersion,
+  ); // <:!:section_11
+  await client.waitForTransaction(txnHash5, { checkSuccess: true });
+
+  // Print out their balances one last time.
+  const aliceBalance3 = await tokenClient.getToken(
+    alice.address(),
+    collectionName,
+    tokenName,
+    `${tokenPropertyVersion}`,
+  );
+  const bobBalance3 = await tokenClient.getTokenForAccount(bob.address(), tokenId);
+  console.log(`Alice's token balance: ${aliceBalance3["amount"]}`);
+  console.log(`Bob's token balance: ${bobBalance3["amount"]}`);
+
   }
   
 })();
