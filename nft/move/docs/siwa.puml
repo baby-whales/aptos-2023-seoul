@@ -1,0 +1,13 @@
+@startuml
+Alice -> Bob : Request Nonce
+Bob -> Bob : Generate a random number
+Bob -> Alice: Nonce Response
+Alice -> Alice : Connect Wallet
+Alice -> Alice : Create 'SIWA' with Private Key
+Alice -> Bob: Verify 'SIWA' Message Request
+Bob -> Bob : Verify 'SIWA' Message
+Bob -> Bob : Session Verified
+Bob -> Alice: Verify Response
+Alice --> Bob : Request Secure Actions
+@enduml
+
