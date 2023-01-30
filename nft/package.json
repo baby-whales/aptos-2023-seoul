@@ -15,6 +15,7 @@
     "get_badges": "ts-node get_badges.ts",
     "mint_game_proofs": "ts-node mint_game_proofs.ts",
     "get_proofs": "ts-node get_proofs.ts", 
+    "can_coin": "ts-node cannedbi_coin.ts", 
     "transfer_coin": "ts-node transfer_coin.ts",
     "test": "run-s bcs_transaction multisig_transaction simple_nft transfer_coin",
     "your_coin": "ts-node your_coin.ts"

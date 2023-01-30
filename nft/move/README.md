@@ -21,6 +21,22 @@ aptos move test --named-addresses can_coin=default
 aptos  move publish  --named-addresses can_coin=default
 ```
 
+```bash
+{
+  "Result": {
+    "transaction_hash": "0x6dcfd9ca8375a823c207a2cf1562fd0aa3a5c2449c45cc1184901b56cab4eb31",
+    "gas_used": 7186,
+    "gas_unit_price": 100,
+    "sender": "0f51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34",
+    "sequence_number": 51,
+    "success": true,
+    "timestamp_us": 1675059029231268,
+    "version": 7011839,
+    "vm_status": "Executed successfully"
+  }
+}
+```
+
 ## CanCoin
 
 ## Cannedbi NFT

@@ -2,10 +2,13 @@
 
 //import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS  } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
 import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS  } from "./dist/index";
+import { ApiError as AptosApiError } from "./dist/index";
+import { Types as AptosTypes } from "./dist/index";
 import { HexString,MaybeHexString } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
 import { NODE_URL, FAUCET_URL } from "./common";
 import * as Gen from "./generated";
 
+const CAN_COIN_ADDRESS = "0xf51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34";
 
 // export interface TxnRequestRaw {
 //     sender: MaybeHexString;
@@ -31,6 +34,42 @@ export interface AccountMetaData {
 export interface Wallet {
     code: string; // mnemonic
     accounts: AccountMetaData[];
+}
+
+export enum CoinType {
+  APTOS = "AptosCoin", // native coin
+  // coin that bridge supports, same to bridge::coin module
+  WETH = "WETH",
+  WBTC = "WBTC",
+
+  USDC = "USDC",
+  USDT = "USDT",
+  BUSD = "BUSD",
+  USDD = "USDD",
+  CAN = "CAN",
+}
+
+export const supportedTypes = [CoinType.WETH, CoinType.WBTC, CoinType.USDC, CoinType.USDT, CoinType.BUSD, CoinType.USDD]
+
+export function isErrorOfApiError(e: any, status: number) {
+  if (e instanceof AptosApiError) {
+      return e.status === status
+  } else if (e instanceof AptosTypes.ApiError) {
+      return e.status === status
+  } else if (e instanceof Error && e.constructor.name.match(/ApiError[0-9]*/)) {
+      if (Object.prototype.hasOwnProperty.call(e, "vmErrorCode")) {
+          const err = e as AptosApiError
+          return err.status === status
+      } else if (Object.prototype.hasOwnProperty.call(e, "request")) {
+          const err = e as AptosTypes.ApiError
+          return err.status === status
+      }
+  } else if (e instanceof Error) {
+      if (Object.prototype.hasOwnProperty.call(e, "status")) {
+          return (e as any).status === status
+      }
+  }
+  return false
 }
 
 export class WalletClient {
@@ -352,6 +391,52 @@ export class WalletClient {
     return collection;
   }
 
+  
+  getCoinType(coin: CoinType): string {
+    switch (coin) {
+        case CoinType.APTOS:
+            return `0x1::aptos_coin::${coin}`
+        case CoinType.CAN:
+          return `${CAN_COIN_ADDRESS}::can_coin::CanCoin`
+        // default:
+        //     return `${this.bridge}::asset::${coin}`
+    }
+  }
+  //0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+  //"type": "0x1::coin::CoinStore<0xf51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34::can_coin::CanCoin>",
+    
+  //"type": "0x1::coin::CoinStore<0xf51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34::can_coin::CanCoin>"
 
+  // async isAccountCanCoinRegistered(accountAddr: string,coin: CoinType): Promise<boolean> {
+  //   try {
+  //       await this.aptosClient.getAccountResource(accountAddr, 
+  //       "0x1::coin::CoinStore<0xf51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34::can_coin::CanCoin>")
+  //       return true
+  //   } catch (e) {
+  //       if (isErrorOfApiError(e, 404)) {
+  //           return false
+  //       }
+  //       throw e
+  //   }
+  // }
+
+  async isAccountRegistered(accountAddr: string,coin: CoinType): Promise<boolean> {
+    const coinType : string = `0x1::coin::CoinStore<${this.getCoinType(coin)}>`;
+    //console.log("coin type:",coinType);
+    //const coinType2 = "0x1::coin::CoinStore<0xf51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34::can_coin::CanCoin>";
+    //console.log("coin type:",coinType2);    
+    //console.log("diff:",coinType == coinType2);
+    
+    try {
+        await this.aptosClient.getAccountResource(accountAddr, 
+          coinType)
+        return true
+    } catch (e) {
+        if (isErrorOfApiError(e, 404)) {
+            return false
+        }
+        throw e
+    }
+  }
 }
 
