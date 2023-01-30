@@ -59,7 +59,7 @@ const PUBLIC_ADDRESS = "0x0f51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31d
     console.log(`Bob: ${await coinClient.checkBalance(bob)}`);
     console.log("");
 
-    const collectionName = "Cannedbi NFT Collection #3";
+    const collectionName = "Cannedbi NFT Collection #4";
 
     const collectionData = await tokenClient.getCollectionData(alice.address(), collectionName);
     console.log(`Cannedbi collection: ${JSON.stringify(collectionData, null, 4)}`); 

@@ -1,4 +1,5 @@
 @startuml
+Alice --> Bob : Session Connected
 Alice -> Bob : Request Nonce
 Bob -> Bob : Generate a random number
 Bob -> Alice: Nonce Response

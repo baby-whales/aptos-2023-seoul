@@ -18,11 +18,11 @@ import { AnyNumber, Bytes, Uint8 , Uint16 } from "./bcs";
 import { MAX_U64_BIG_INT } from "./bcs/consts";
 //import { HexString, MaybeHexString } from "./hex_string";
 
-//const PRIVATE_KEY = "0x059476ec5425e7878cd6d85250cf66a17539e9ccea89e25a00292c7a102a53af";
-//const PUBLIC_ADDRESS = "0x0f51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34";
+const PRIVATE_KEY = "0x059476ec5425e7878cd6d85250cf66a17539e9ccea89e25a00292c7a102a53af";
+const PUBLIC_ADDRESS = "0x0f51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34";
 
-const PRIVATE_KEY = "0x28a44b352e5f6dbc93cfbaae325aa8a68e99b401f54fee19ea03fd6ba4ab7633";
-const PUBLIC_ADDRESS = "0xaf58703596ab584b8dc13f88fa09eca1b97eb11b74d042dcabd07fd0b269d6a2";
+//const PRIVATE_KEY = "0x28a44b352e5f6dbc93cfbaae325aa8a68e99b401f54fee19ea03fd6ba4ab7633";
+//const PUBLIC_ADDRESS = "0xaf58703596ab584b8dc13f88fa09eca1b97eb11b74d042dcabd07fd0b269d6a2";
 
 function getRandomInt(max: number) {
     return Math.floor(Math.random() * max);
@@ -106,27 +106,19 @@ async function mutateTokenProperties(
     console.log(`Alice: ${await coinClient.checkBalance(alice)}`);
     console.log("");
 
-    const collectionName = "Cannedbi NFT Collection #3";
+    const collectionName = "Cannedbi NFT Collection #4";
 
     const collectionData = await tokenClient.getCollectionData(alice.address(), collectionName);
     console.log(`Cannedbi collection: ${JSON.stringify(collectionData, null, 4)}`); // <:!:section_6
 
-    const maxMintCount = 10;
+    const maxMintCount = 1;
 
     for( let idx = 1; idx <= maxMintCount; idx++ ) {
 
         const tokenName = "Cannedbi #"+idx;
         //const description = "Cannedbi NFT #"+idx;
 
-        const tokenPropertyVersion = 0;
-        const tokenId = {
-            token_data_id: {
-                creator: alice.address().hex(),
-                collection: collectionName,
-                name: tokenName,
-            },
-            property_version: `${tokenPropertyVersion}`,
-        };
+
 
         const idxStr = zeroPad(idx, 4);
         const uri_cap = "ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/"+idxStr+".png";
@@ -141,49 +133,52 @@ async function mutateTokenProperties(
         //public fun mutate_one_token(
 
         // TODO 안된다 ㅎ 
-        let a = await mutateTokenProperties(
-            client,tokenClient,
-            alice,
-            alice.address(),
-            alice.address(),
-            collectionName,
-            tokenName,
-            1,//tokenPropertyVersion,
-            1,
-            ["uri_cap","uri_decap","capped", "stat1", "stat2", "stat3", "stat4", "badge1"],
-            [ BCS.bcsSerializeStr(uri_cap), 
-              BCS.bcsSerializeStr(uri_decap), 
-              BCS.bcsSerializeBool(false), 
-              BCS.bcsSerializeU8(1),
-              BCS.bcsSerializeU8(1),
-              BCS.bcsSerializeU8(1),
-              BCS.bcsSerializeU8(1),
-              BCS.bcsSerializeU16(1)
-            ],
-            ["string","string","bool", "u8", "u8", "u8", "u8", "u16"],
-          );
-        let b = await client.waitForTransactionWithResult(a);
-
         // let a = await mutateTokenProperties(
-        // client,tokenClient,
-        // alice,
-        // alice.address(),
-        // alice.address(),
-        // collectionName,
-        // tokenName,
-        // 0,
-        // 1,
-        // ["capped"],
-        // [ 
-        //     BCS.bcsSerializeBool(false)
-        // ],
-        // ["bool"],
-        // );
+        //     client,tokenClient,
+        //     alice,
+        //     alice.address(),
+        //     alice.address(),
+        //     collectionName,
+        //     tokenName,
+        //     0,//tokenPropertyVersion,
+        //     1,
+        //     ["TOKEN_PROPERTY_MUTABLE","uri_cap","uri_decap","capped", "stat1", "stat2", "stat3", "stat4", "badge1"],
+        //     [ BCS.bcsSerializeBool(true), 
+        //       BCS.bcsSerializeStr(uri_cap), 
+        //       BCS.bcsSerializeStr(uri_decap), 
+        //       BCS.bcsSerializeBool(false), 
+        //       BCS.bcsSerializeU8(1),
+        //       BCS.bcsSerializeU8(1),
+        //       BCS.bcsSerializeU8(1),
+        //       BCS.bcsSerializeU8(1),
+        //       BCS.bcsSerializeU16(1)
+        //     ],
+        //     ["bool","string","string","bool", "u8", "u8", "u8", "u8", "u16"],
+        //   );
         // let b = await client.waitForTransactionWithResult(a);
-        console.log("mutate result:", b);
+
+        //console.log("mutate result:", b);
       
+        // creator 에서 가져오는 것은 property_version 이랑 상관없이 가져오고,
+        // TODO tokenData 에 largest_token_property_version 가 포함되어야 한다!
         const tokenData = await tokenClient.getTokenData(alice.address(), collectionName, tokenName);
         console.log(`Cannedbi token data: ${JSON.stringify(tokenData, null, 4)}`); // <:!:section_8
+
+        //const tokenPropertyVersion = tokenData.largest_token_property_version;
+        const tokenPropertyVersion = 1;
+        const tokenId = {
+            token_data_id: {
+                creator: alice.address().hex(),
+                collection: collectionName,
+                name: tokenName,
+            },
+            property_version: `${tokenPropertyVersion}`,
+        };
+
+        // 위에서 읽은 property_version 으로 account에 있는 것을 읽어와야 한다.
+        const tokenData2 = await tokenClient.getTokenForAccount(alice.address(), tokenId);
+        console.log(`Cannedbi token data: ${JSON.stringify(tokenData2, null, 4)}`); // <:!:section_8
+
 
     }
 

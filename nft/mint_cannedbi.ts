@@ -167,8 +167,10 @@ async function createCannedbiToken(client: AptosClient,
       account.address(),
       100,
       5,
-      ["uri_cap","uri_decap","capped", "stat1", "stat2", "stat3", "stat4", "badge1"],
-      [ BCS.bcsSerializeStr(uri_cap), 
+      ["TOKEN_PROPERTY_MUTABLE","uri_cap","uri_decap","capped", "stat1", "stat2", "stat3", "stat4", "badge1"],
+      [ 
+        BCS.bcsSerializeBool(true), 
+        BCS.bcsSerializeStr(uri_cap), 
         BCS.bcsSerializeStr(uri_decap), 
         BCS.bcsSerializeBool(capped), 
         BCS.bcsSerializeU8(stat1),
@@ -177,9 +179,10 @@ async function createCannedbiToken(client: AptosClient,
         BCS.bcsSerializeU8(stat4),
         BCS.bcsSerializeU16(badge1)
       ],
-      ["string","string","bool", "u8", "u8", "u8", "u8", "u16"],
-      [false,true,true,true,true],// 1,uri,royalty,description, properies
-    ); 
+      ["bool","string","string","bool", "u8", "u8", "u8", "u8", "u16"],
+      //[false,true,true,true,true],// 1,uri,royalty,description, properies
+      [false,true,false,false,true],// 1,uri,royalty,description, properies
+      ); 
     await client.waitForTransaction(txnHash2, { checkSuccess: true });
   
 
@@ -237,7 +240,7 @@ async function createCannedbiToken(client: AptosClient,
 
   console.log("=== Creating Collection and Token ===");
 
-  const collectionName = "Cannedbi NFT Collection #3" ;
+  const collectionName = "Cannedbi NFT Collection #4" ;
  
   // create cannedbi collection
   const txnHash1 = await createCollection(client,tokenClient,alice, collectionName, 
