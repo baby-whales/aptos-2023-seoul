@@ -6,10 +6,10 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { AptosClient, AptosAccount, CoinClient, FaucetClient } from "aptos";
+import { AptosClient, AptosAccount, CoinClient, FaucetClient } from "./dist/index";
 import { NODE_URL, FAUCET_URL } from "./common";
 
-import { HexString,MaybeHexString } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
+import { HexString,MaybeHexString } from "./dist/index";
 
 import { WalletClient , CoinType } from "./wallet_client";
 
@@ -76,13 +76,20 @@ const PUBLIC_ADDRESS = "0x0f51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31d
 
   // Print out final balances.
   console.log("=== Final Balances ===");
+  console.log(`Owner: ${await coinClient.checkBalance(owner)}`);
   console.log(`Alice: ${await coinClient.checkBalance(alice)}`);
   console.log(`Bob: ${await coinClient.checkBalance(bob)}`);
   console.log("");
 
+  const canBalance = await coinClient.checkBalance(owner,{ coinType : "0xf51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34::can_coin::CanCoin" });
+  console.log(`Owner CAN: ${canBalance}`);
 
   console.log("=== Can Coin Registered ===");
   console.log(`Owner: ${await walletClient.isAccountRegistered(owner.address().hex(),
     CoinType.CAN)}`);
+    const mintResult = await walletClient.managedMintToken(owner,owner.address().hex(),CoinType.CAN,1000);
+    console.log("=== Mint Result ===");
+    console.log(mintResult);
+
 
 })();

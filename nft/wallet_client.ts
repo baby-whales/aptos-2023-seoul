@@ -7,6 +7,8 @@ import { Types as AptosTypes } from "./dist/index";
 import { HexString,MaybeHexString } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
 import { NODE_URL, FAUCET_URL } from "./common";
 import * as Gen from "./generated";
+import { AnyNumber, Bytes, Uint8 , Uint16 } from "./bcs";
+//import { TransactionBuilder, TransactionBuilderABI, TxnBuilderTypes } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
 
 const CAN_COIN_ADDRESS = "0xf51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34";
 
@@ -437,6 +439,24 @@ export class WalletClient {
         }
         throw e
     }
+  }
+
+  //"type": "0x1::managed_coin::Capabilities<0xf51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34::can_coin::CanCoin>",
+  
+  async managedMintToken(
+    account: AptosAccount,
+    destAddress: MaybeHexString,
+    coin: CoinType,
+    amount: AnyNumber,
+  ): Promise<string> {
+    const addr = `0x1::managed_coin::mint<${this.getCoinType(coin)}>`;
+    const payload = this.tokenClient.transactionBuilder.buildTransactionPayload(
+      addr,
+      [],
+      [destAddress,amount],
+    );
+
+    return this.aptosClient.generateSignSubmitTransaction(account, payload);
   }
 }
 
