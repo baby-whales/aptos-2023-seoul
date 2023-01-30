@@ -8,6 +8,7 @@
 
 ```bash
 aptos move compile  --named-addresses can_coin=default,cannedbi_nft=default
+aptos move compile  --named-addresses can_coin=default,cannedbi_nft=default,source_addr=default,admin_addr=default
 ```
 
 * test
