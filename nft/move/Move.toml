@@ -7,8 +7,8 @@ upgrade_policy = "compatible"
 # AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "main" }
 # AptosToken = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-token", rev = "main" }
 
-# AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "devnet" }
-# AptosToken = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-token", rev = "devnet" }
+#AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "devnet" }
+#AptosToken = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-token", rev = "devnet" }
 
 AptosFramework = { local = "../../../aptos-core/aptos-move/framework/aptos-framework/"}
 AptosToken = { local = "../../../aptos-core/aptos-move/framework/aptos-token/"}
@@ -21,3 +21,5 @@ cannedbi_nft = "_"
 # change it to `source_addr = "_" when calling `create-resource-account-and-publish-package` from the cli
 #source_addr = "_"
 
+# replace the admin_addr with the actual admin address we created using CLI
+admin_addr = "_"

@@ -17,6 +17,21 @@ aptos move test --named-addresses can_coin=default,cannedbi_nft=default
 ```
 
 * publish
+
+  * https://github.com/baby-whales/aptos-core/blob/main/aptos-move/move-examples/mint_nft/4-Getting-Production-Ready/sources/create_nft_getting_production_ready.move
+  *  How to interact with this module
+     *  Configure the admin account name address in Move.toml file.
+     *  Go to `Move.toml` and replace `admin_addr = "0xbeef"` with the admin address we created in part 3.
+     *  Publish the module under a resource account.
+     *  2.a Make sure you're in the right directory.
+     *  Run the following command in directory 
+     *  2.b Run the following CLI command to publish the module under a resource account.
+
+```bash
+ aptos move create-resource-account-and-publish-package --seed 2727 --address-name cannedbi_nft --profile default --named-addresses can_coin=default,source_addr=default
+```
+
+
 ```bash
 aptos  move publish  --named-addresses can_coin=default,cannedbi_nft=default
 ```
