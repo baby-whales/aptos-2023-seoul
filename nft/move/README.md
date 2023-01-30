@@ -7,18 +7,18 @@
 * compile
 
 ```bash
-aptos move compile  --named-addresses can_coin=default
+aptos move compile  --named-addresses can_coin=default,cannedbi_nft=default
 ```
 
 * test
 
 ```bash
-aptos move test --named-addresses can_coin=default
+aptos move test --named-addresses can_coin=default,cannedbi_nft=default
 ```
 
 * publish
 ```bash
-aptos  move publish  --named-addresses can_coin=default
+aptos  move publish  --named-addresses can_coin=default,cannedbi_nft=default
 ```
 
 ```bash
