@@ -1,4 +1,4 @@
-module CanCoin::can_coin {
+module can_coin::can_coin {
     struct CanCoin {}
 
     fun init_module(sender: &signer) {

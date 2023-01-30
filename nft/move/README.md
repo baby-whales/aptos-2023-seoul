@@ -2,6 +2,25 @@
 
 # CANNEDBI 
 
+## Compile &  Test &  Publish
+
+* compile
+
+```bash
+aptos move compile  --named-addresses can_coin=default
+```
+
+* test
+
+```bash
+aptos move test --named-addresses can_coin=default
+```
+
+* publish
+```bash
+aptos  move publish  --named-addresses can_coin=default
+```
+
 ## CanCoin
 
 ## Cannedbi NFT

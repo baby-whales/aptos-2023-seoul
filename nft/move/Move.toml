@@ -14,8 +14,9 @@ AptosFramework = { local = "../../../aptos-core/aptos-move/framework/aptos-frame
 AptosToken = { local = "../../../aptos-core/aptos-move/framework/aptos-token/"}
 
 [addresses]
-cannedbi = "_"
+can_coin = "_"
+#cannedbi = "_"
 #deployer = "_"
 # change it to `source_addr = "_" when calling `create-resource-account-and-publish-package` from the cli
-source_addr = "_"
+#source_addr = "_"
 
