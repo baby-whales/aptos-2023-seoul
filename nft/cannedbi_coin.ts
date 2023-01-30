@@ -87,9 +87,10 @@ const PUBLIC_ADDRESS = "0x0f51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31d
   console.log("=== Can Coin Registered ===");
   console.log(`Owner: ${await walletClient.isAccountRegistered(owner.address().hex(),
     CoinType.CAN)}`);
-    const mintResult = await walletClient.managedMintToken(owner,owner.address().hex(),CoinType.CAN,1000);
+    const txnHash2 = await walletClient.managedMintToken(owner,owner.address().hex(),CoinType.CAN,1000);
     console.log("=== Mint Result ===");
-    console.log(mintResult);
+    console.log(txnHash2);
+    await client.waitForTransaction(txnHash2, { checkSuccess: true }); // <:!:publish
 
 
 })();
