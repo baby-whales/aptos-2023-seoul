@@ -4,11 +4,16 @@
 
 ## Compile &  Test &  Publish
 
+* init
+
+```bash
+aptos init
+```
+
 * compile
 
 ```bash
-aptos move compile  --named-addresses can_coin=default,cannedbi_nft=default
-aptos move compile  --named-addresses can_coin=default,cannedbi_nft=default,source_addr=default,admin_addr=default
+aptos move compile  --named-addresses admin_addr=default,can_coin=default,cannedbi_nft=default
 ```
 
 * test
@@ -25,12 +30,31 @@ aptos move publish --named-addresses admin_addr=default,can_coin=default,cannedb
 
 ```bash
 {
-  "Result": [
-    "922863f31a5f8cb99051fc2fed9a4ec2b3c3c75ed61c35964688ae60b0999bdf::can_coin",
-    "922863f31a5f8cb99051fc2fed9a4ec2b3c3c75ed61c35964688ae60b0999bdf::character"
-  ]
+  "Result": {
+    "transaction_hash": "0xe4ebfd3834348e802f748f83576a2b7104546e2f8d90241dc47fdbe97c9a8c03",
+    "gas_used": 11138,
+    "gas_unit_price": 100,
+    "sender": "922863f31a5f8cb99051fc2fed9a4ec2b3c3c75ed61c35964688ae60b0999bdf",
+    "sequence_number": 2,
+    "success": true,
+    "timestamp_us": 1675165293210134,
+    "version": 7813122,
+    "vm_status": "Executed successfully"
+  }
 }
 ```
+
+```bash
+more config.yaml
+---
+profiles:
+  default:
+    private_key: "0x50469bd6a0536a92e89714ce0e54448e6899a839021c624ca9a86a0a53c544e7"
+    public_key: "0x9dacb09b44b21db7a6f27c9d0f8102f3e3802e9b240cb239693330584b406e5c"
+    account: 922863f31a5f8cb99051fc2fed9a4ec2b3c3c75ed61c35964688ae60b0999bdf
+    rest_url: "https://fullnode.devnet.aptoslabs.com"
+    faucet_url: "https://faucet.devnet.aptoslabs.com"
+```    
 
 ## CanCoin
 

@@ -1,21 +1,21 @@
 // objective : create a Character NFT collection and mint NFTs 
 module cannedbi_nft::character {
     use std::bcs;
-    use aptos_std::from_bcs;
-    use std::hash;
+    //use aptos_std::from_bcs;
+    //use std::hash;
 
     use std::error;
     
     use std::signer;
     
     use std::string::{Self, String};
-    use std::vector;
+    //use std::vector;
 
     use aptos_framework::account;
-    use aptos_framework::account::SignerCapability;
-    use aptos_framework::resource_account;
+    //use aptos_framework::account::SignerCapability;
+    //use aptos_framework::resource_account;
     
-    use aptos_framework::timestamp;
+    //use aptos_framework::timestamp;
 
     use aptos_framework::event::{Self, EventHandle};
     
@@ -220,7 +220,7 @@ module cannedbi_nft::character {
     public entry fun claim_genesis_token(claimer: &signer,
         token_name : string::String) acquires ModuleData {
 
-        let receiver_addr = signer::address_of(claimer);
+        //let receiver_addr = signer::address_of(claimer);
 
         let module_data = borrow_global_mut<ModuleData>(@cannedbi_nft);
         let resource_signer = account::create_signer_with_capability(&module_data.signer_cap);

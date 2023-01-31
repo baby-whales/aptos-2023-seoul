@@ -12,7 +12,7 @@ import { AnyMxRecord } from "dns";
 //import { TransactionBuilder, TransactionBuilderABI, TxnBuilderTypes } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
 //import { PendingTransaction } from "./dist/index" 
 
-const CAN_COIN_ADDRESS = "0xf51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34";
+import { CAN_COIN_ADDRESS } from "./common"
 
 // export interface TxnRequestRaw {
 //     sender: MaybeHexString;
@@ -426,7 +426,7 @@ export class WalletClient {
 
   async isAccountRegistered(accountAddr: string,coin: CoinType): Promise<boolean> {
     const coinType : string = `0x1::coin::CoinStore<${this.getCoinType(coin)}>`;
-    //console.log("coin type:",coinType);
+    console.log("coin type:",coinType);
     //const coinType2 = "0x1::coin::CoinStore<0xf51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34::can_coin::CanCoin>";
     //console.log("coin type:",coinType2);    
     //console.log("diff:",coinType == coinType2);
@@ -443,6 +443,26 @@ export class WalletClient {
     }
   }
 
+  async registerToken(
+    account: AptosAccount,
+    //receiverAddress: MaybeHexString,
+    coin: CoinType
+  ): Promise<string> {
+    //const addr = "0x1::managed_coin::register";
+    const coinType = this.getCoinType(coin);
+    console.log("registerToken coin type:",coinType);
+
+    const rawTxn = await this.aptosClient.generateTransaction(account.address(), {
+        function: "0x1::managed_coin::register",
+        type_arguments: [coinType],
+        arguments: [],
+      });
+  
+    const bcsTxn = await this.aptosClient.signTransaction(account, rawTxn);
+    const pendingTxn = await this.aptosClient.submitTransaction(bcsTxn);
+  
+    return pendingTxn.hash;
+  }
   //"type": "0x1::managed_coin::Capabilities<0xf51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34::can_coin::CanCoin>",
   // https://github.com/aptosis/aptos-framework/blob/019e555/packages/aptos-framework/src/managed_coin/index.ts#L10
   // https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/examples/typescript/your_coin.ts
@@ -455,7 +475,7 @@ export class WalletClient {
   ): Promise<string> {
     const addr = "0x1::managed_coin::mint";
     const coinType = this.getCoinType(coin);
-    console.log("coin type:",coinType);
+    console.log("managedMintToken coin type:",coinType);
 
     const rawTxn = await this.aptosClient.generateTransaction(account.address(), {
         function: "0x1::managed_coin::mint",
