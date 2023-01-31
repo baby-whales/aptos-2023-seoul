@@ -21,6 +21,10 @@ module cannedbi_nft::character {
     
     use aptos_token::token::{Self,TokenDataId};
     
+    //use aptos_framework::coin;
+    use aptos_framework::coin::{Self};
+    use aptos_framework::aptos_coin::AptosCoin;
+
     // #[test_only]
     // use aptos_framework::account::create_account_for_test;
 
@@ -31,6 +35,7 @@ module cannedbi_nft::character {
     }
 
     // This struct stores an NFT collection's relevant information
+    // todo to parallelize the minting process, we need to store the information separately.
     struct ModuleData has key {
         signer_cap: account::SignerCapability,    
         minting_enabled: bool,
@@ -40,11 +45,6 @@ module cannedbi_nft::character {
         minted: u64,
         mint_price: u64,
     }
-
-    // This struct stores an NFT collection's relevant information
-    // struct ModuleData has key {
-    //     token_data_id: TokenDataId,
-    // }
 
     /// Action not authorized because the signer is not the admin of this module
     const ENOT_AUTHORIZED: u64 = 1;
@@ -86,7 +86,7 @@ module cannedbi_nft::character {
             collection_name : collection_name,
             total_supply : total_supply,
             minted : 0,
-            mint_price : 0,
+            mint_price : 500,
         });
 
     }
@@ -99,7 +99,8 @@ module cannedbi_nft::character {
         module_data.minting_enabled = minting_enabled;
     }
 
-    /// Create and Mint an NFT to the receiver(creator).
+    /// Create and Mint an NFT to the receiver(creator). -> not tested yet
+    /// Only the admin of this module can call this function. -> not tested
     public entry fun create_token(creator: &signer,
         token_name : string::String,
         description : string::String,
@@ -109,6 +110,7 @@ module cannedbi_nft::character {
         stat1 :u8,stat2 :u8,stat3 :u8,stat4 :u8) acquires ModuleData {
 
         let receiver_addr = signer::address_of(creator);
+        assert!(receiver_addr == @admin_addr, error::permission_denied(ENOT_AUTHORIZED));
 
         // get the collection minter and check if the collection minting is disabled or expired
         let module_data = borrow_global_mut<ModuleData>(@cannedbi_nft);
@@ -201,8 +203,38 @@ module cannedbi_nft::character {
             }
         );
 
+        // TODO store token name in the modules vector
         module_data.minted=module_data.minted+1
 
+    }
+
+    /// sell the first token to a claimer
+    public entry fun claim_genesis_token(claimer: &signer,
+        token_name : string::String) acquires ModuleData {
+
+        let receiver_addr = signer::address_of(claimer);
+
+        let module_data = borrow_global_mut<ModuleData>(@cannedbi_nft);
+        let resource_signer = account::create_signer_with_capability(&module_data.signer_cap);
+        let resource_account_address = signer::address_of(&resource_signer);
+
+        // let token_data_id = token::create_token_data_id(@cannedbi_nft,
+        //     module_data.collection_name,token_name);
+        
+        let property_version = 0;
+        let token_id = token::create_token_id_raw(@cannedbi_nft, 
+            module_data.collection_name, token_name, property_version);
+        
+        // the claimer should opt-in direct transfer
+        //token::opt_in_direct_transfer(claimer,true);
+
+        // check the claimer has the token
+        // take the mint price from the claimer
+        coin::transfer<AptosCoin>(claimer, resource_account_address, module_data.mint_price);
+        
+        // give the token to the claimer
+        token::direct_transfer(&resource_signer, claimer, token_id, 1);
+        
     }
 
     // TODO change cap to decap vice versa
