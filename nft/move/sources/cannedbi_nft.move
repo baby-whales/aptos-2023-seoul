@@ -30,6 +30,7 @@ module cannedbi_nft::create_nft {
         signer_cap: account::SignerCapability,
         minting_enabled: bool,
         token_minting_events: EventHandle<TokenMintingEvent>,
+        collection_name : String,
     }
 
     // This struct stores an NFT collection's relevant information
@@ -66,6 +67,7 @@ module cannedbi_nft::create_nft {
             signer_cap: resource_signer_cap,
             minting_enabled: true,
             token_minting_events: account::new_event_handle<TokenMintingEvent>(resource_signer),
+            collection_name : collection_name,
         });
 
 
@@ -78,6 +80,89 @@ module cannedbi_nft::create_nft {
         assert!(caller_address == @admin_addr, error::permission_denied(ENOT_AUTHORIZED));
         let module_data = borrow_global_mut<ModuleData>(@cannedbi_nft);
         module_data.minting_enabled = minting_enabled;
+    }
+
+    /// Mint an NFT to the receiver(claimer).
+    public entry fun mint(claimer: &signer) acquires ModuleData {
+        let receiver_addr = signer::address_of(claimer);
+
+        // get the collection minter and check if the collection minting is disabled or expired
+        let module_data = borrow_global_mut<ModuleData>(@cannedbi_nft);
+        assert!(module_data.minting_enabled, error::permission_denied(EMINTING_DISABLED));
+
+        // mint token to the receiver
+        let resource_signer = account::create_signer_with_capability(&module_data.signer_cap);
+        let resource_account_address = signer::address_of(&resource_signer);
+
+        let token_name = string::utf8(b"Cannedbi NFT #1");
+        let token_uri = string::utf8(b"http://cannedbi.com");
+        let token_property_mutable = true;
+        let uri_cap = string::utf8(b"http://cannedbi.com");
+        let uri_decap = string::utf8(b"http://cannedbi.com");
+        let capped = false;
+        let stat1 = 1;
+        let stat2 = 2;
+        let stat3 = 3;
+        let stat4 = 4;
+        let badge1 = 1;
+        // Create a token data id to specify the token to be minted.
+        //  https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token.move
+        let token_data_id = token::create_tokendata(
+            &resource_signer,
+            module_data.collection_name,
+            token_name,
+            string::utf8(b""), // description
+            1,  // maximum supply
+            token_uri, // uri
+            resource_account_address,  // royalty receiver
+            20, // royalty_points_denominator
+            1, // royalty_points_numerator
+            // This variable sets if we want to allow mutation for token maximum, uri, royalty, description, and properties.
+            // Here we enable mutation for properties by setting the last boolean in the vector to true.
+            token::create_token_mutability_config(
+                &vector<bool>[false,true,false,false,true],// 1,uri,royalty,description, properies
+            ),
+            vector<String>[string::utf8(b"TOKEN_PROPERTY_MUTABLE"),
+                string::utf8(b"uri_cap"),
+                string::utf8(b"uri_decap"),
+                string::utf8(b"capped"), 
+                string::utf8(b"stat1"), 
+                string::utf8(b"stat2"), 
+                string::utf8(b"stat3"), 
+                string::utf8(b"stat4"), 
+                string::utf8(b"badge1")],
+            vector<vector<u8>>[bcs::to_bytes<bool>(&token_property_mutable),
+                bcs::to_bytes(&uri_cap),
+                bcs::to_bytes(&uri_decap),
+                bcs::to_bytes<bool>(&capped),
+                bcs::to_bytes<u8>(&stat1),
+                bcs::to_bytes<u8>(&stat2),
+                bcs::to_bytes<u8>(&stat3),
+                bcs::to_bytes<u8>(&stat4),
+                bcs::to_bytes<u64>(&badge1)
+            ],
+            vector<String>[ string::utf8(b"bool") ,
+                string::utf8(b"string"),
+                string::utf8(b"string"),
+                string::utf8(b"bool"),
+                string::utf8(b"u8"),
+                string::utf8(b"u8"),
+                string::utf8(b"u8"),
+                string::utf8(b"u8"),
+                string::utf8(b"u64")
+            ]
+        );
+        let token_id = token::mint_token(&resource_signer, token_data_id, 1);
+        token::direct_transfer(&resource_signer, claimer, token_id, 1);
+
+        event::emit_event<TokenMintingEvent>(
+            &mut module_data.token_minting_events,
+            TokenMintingEvent {
+                token_receiver_address: receiver_addr,
+                token_data_id: token_data_id,
+            }
+        );
+
     }
 
 //
