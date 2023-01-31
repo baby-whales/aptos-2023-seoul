@@ -31,12 +31,13 @@ module cannedbi_nft::create_nft {
 
     // This struct stores an NFT collection's relevant information
     struct ModuleData has key {
-        signer_cap: account::SignerCapability,
+        signer_cap: account::SignerCapability,    
         minting_enabled: bool,
         token_minting_events: EventHandle<TokenMintingEvent>,
         collection_name : String,
         total_supply: u64,
         minted: u64,
+        mint_price: u64,
     }
 
     // This struct stores an NFT collection's relevant information
@@ -56,10 +57,10 @@ module cannedbi_nft::create_nft {
     const MINT_LIMIT_EXCEED: u64 = 9;
 
     /// `init_module` is automatically called when publishing the module.
-    /// In this function, we create an example NFT collection and an example token.
+    /// In this function, we create an NFT collection 
     fun init_module(resource_signer: &signer) {
-        let collection_name = string::utf8(b"Cannedbi NFT Collection #1");
-        let description = string::utf8(b"Cannedbi NFT Collection");
+        let collection_name = string::utf8(b"Cannedbi Aptos NFT Collection #1");
+        let description = string::utf8(b"Cannedbi Aptos NFT Collection");
         let collection_uri = string::utf8(b"http://cannedbi.com");
         // This means that the supply of the token will not be tracked.
         let maximum_supply = 10000000000;
@@ -70,12 +71,13 @@ module cannedbi_nft::create_nft {
         // Create the nft collection.
         token::create_collection(resource_signer, collection_name, description, collection_uri, maximum_supply, mutate_setting);
 
-        // Retrieve the resource signer's signer capability and store it within the `ModuleData`.
-        // Note that by calling `resource_account::retrieve_resource_account_cap` to retrieve the resource account's signer capability,
-        // we rotate th resource account's authentication key to 0 and give up our control over the resource account. Before calling this function,
-        // the resource account has the same authentication key as the source account so we had control over the resource account.
+        // store the token data id within the module, so we can refer to it later
+        // when we're minting the NFT
         let resource_signer_cap = resource_account::retrieve_resource_account_cap(resource_signer, @source_addr);
-
+        // move_to<ResourceInfo>(&resource_signer_from_cap, 
+        //     ResourceInfo{signer_cap: resource_signer_cap, 
+        //     source: @source_addr});
+        
         move_to(resource_signer, ModuleData {
             signer_cap: resource_signer_cap,
             minting_enabled: true,
@@ -83,9 +85,8 @@ module cannedbi_nft::create_nft {
             collection_name : collection_name,
             total_supply : total_supply,
             minted : 0,
+            mint_price : 0,
         });
-
-
 
     }
 
@@ -97,9 +98,16 @@ module cannedbi_nft::create_nft {
         module_data.minting_enabled = minting_enabled;
     }
 
-    /// Mint an NFT to the receiver(claimer).
-    public entry fun mint(claimer: &signer) acquires ModuleData {
-        let receiver_addr = signer::address_of(claimer);
+    /// Create and Mint an NFT to the receiver(creator).
+    public entry fun create_token(creator: &signer,
+        token_name : string::String,
+        description : string::String,
+        token_uri : string::String,
+        uri_cap : string::String,
+        uri_decap : string::String,
+        stat1 :u8,stat2 :u8,stat3 :u8,stat4 :u8) acquires ModuleData {
+
+        let receiver_addr = signer::address_of(creator);
 
         // get the collection minter and check if the collection minting is disabled or expired
         let module_data = borrow_global_mut<ModuleData>(@cannedbi_nft);
@@ -114,16 +122,16 @@ module cannedbi_nft::create_nft {
         //let remaining = module_data.total_supply - module_data.minted;
         //let random_index = pseudo_random(receiver_addr,remaining);
 
-        let token_name = string::utf8(b"Cannedbi NFT #1");
-        let token_uri = string::utf8(b"http://cannedbi.com");
+        //let token_name = string::utf8(b"Cannedbi NFT #1");
+        //let token_uri = string::utf8(b"http://cannedbi.com");
         let token_property_mutable = true;
-        let uri_cap = string::utf8(b"http://cannedbi.com");
-        let uri_decap = string::utf8(b"http://cannedbi.com");
+        //let uri_cap = string::utf8(b"http://cannedbi.com");
+        //let uri_decap = string::utf8(b"http://cannedbi.com");
         let capped = false;
-        let stat1 = pseudo_random_u8(receiver_addr,10);
-        let stat2 = pseudo_random_u8(receiver_addr,10);
-        let stat3 = pseudo_random_u8(receiver_addr,10);
-        let stat4 = pseudo_random_u8(receiver_addr,10);
+        //let stat1 = pseudo_random_u8(receiver_addr,10);
+        //let stat2 = pseudo_random_u8(receiver_addr,10);
+        //let stat3 = pseudo_random_u8(receiver_addr,10);
+        //let stat4 = pseudo_random_u8(receiver_addr,10);
         let badge1 = 0;
         // Create a token data id to specify the token to be minted.
         //  https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token.move
@@ -131,7 +139,7 @@ module cannedbi_nft::create_nft {
             &resource_signer,
             module_data.collection_name,
             token_name,
-            string::utf8(b""), // description
+            description,//string::utf8(b""), // description
             1,  // maximum supply
             token_uri, // uri
             resource_account_address,  // royalty receiver
@@ -173,9 +181,16 @@ module cannedbi_nft::create_nft {
             ]
         );
         let token_id = token::mint_token(&resource_signer, token_data_id, 1);
+        // what is different with opt_in_direct_transfer? 
         //token::opt_in_direct_transfer(receiver,true);
+        // mint price 
         //coin::transfer<AptosCoin>(receiver, resource_data.source, mint_price);
-        token::direct_transfer(&resource_signer, claimer, token_id, 1);
+        token::direct_transfer(&resource_signer, creator, token_id, 1);
+
+        // what is different between mint_token_to() and mint_token , direct_transfer 
+        // create tokens and directly deposite to receiver's address. 
+        //The receiver should opt-in direct transfer
+        //token::mint_token_to()
 
         event::emit_event<TokenMintingEvent>(
             &mut module_data.token_minting_events,
@@ -189,60 +204,65 @@ module cannedbi_nft::create_nft {
 
     }
 
-    fun pseudo_random(add:address,remaining:u64):u64
-    {
-        let x = bcs::to_bytes(&add);
-        let y = bcs::to_bytes(&remaining);
-        let z = bcs::to_bytes(&timestamp::now_seconds());
-        vector::append(&mut x,y);
-        vector::append(&mut x,z);
-        let tmp = hash::sha2_256(x);
+    // TODO change cap to decap vice versa
+    // TODO change stat1,stat2,stat3,stat4
+    // TODO change badge1
 
-        let data = vector<u8>[];
-        let i =24;
-        while (i < 32)
-        {
-            let x =vector::borrow(&tmp,i);
-            vector::append(&mut data,vector<u8>[*x]);
-            i= i+1;
-        };
-        assert!(remaining>0,999);
 
-        let random = from_bcs::to_u64(data) % remaining + 1;
-        if (random == 0 )
-        {
-            random = 1;
-        };
-        random
+    // fun pseudo_random(add:address,remaining:u64):u64
+    // {
+    //     let x = bcs::to_bytes(&add);
+    //     let y = bcs::to_bytes(&remaining);
+    //     let z = bcs::to_bytes(&timestamp::now_seconds());
+    //     vector::append(&mut x,y);
+    //     vector::append(&mut x,z);
+    //     let tmp = hash::sha2_256(x);
 
-    }
-    fun pseudo_random_u8(add:address,remaining:u8):u8
-    {
-        let x = bcs::to_bytes(&add);
-        let y = bcs::to_bytes(&remaining);
-        let z = bcs::to_bytes(&timestamp::now_seconds());
-        vector::append(&mut x,y);
-        vector::append(&mut x,z);
-        let tmp = hash::sha2_256(x);
+    //     let data = vector<u8>[];
+    //     let i =24;
+    //     while (i < 32)
+    //     {
+    //         let x =vector::borrow(&tmp,i);
+    //         vector::append(&mut data,vector<u8>[*x]);
+    //         i= i+1;
+    //     };
+    //     assert!(remaining>0,999);
 
-        let data = vector<u8>[];
-        let i =24;
-        while (i < 32)
-        {
-            let x =vector::borrow(&tmp,i);
-            vector::append(&mut data,vector<u8>[*x]);
-            i= i+1;
-        };
-        assert!(remaining>0,999);
+    //     let random = from_bcs::to_u64(data) % remaining + 1;
+    //     if (random == 0 )
+    //     {
+    //         random = 1;
+    //     };
+    //     random
 
-        let random = from_bcs::to_u8(data) % remaining + 1;
-        if (random == 0 )
-        {
-            random = 1;
-        };
-        random
+    // }
+    // fun pseudo_random_u8(add:address,remaining:u8):u8
+    // {
+    //     let x = bcs::to_bytes(&add);
+    //     let y = bcs::to_bytes(&remaining);
+    //     let z = bcs::to_bytes(&timestamp::now_seconds());
+    //     vector::append(&mut x,y);
+    //     vector::append(&mut x,z);
+    //     let tmp = hash::sha2_256(x);
 
-    }
+    //     let data = vector<u8>[];
+    //     let i =24;
+    //     while (i < 32)
+    //     {
+    //         let x =vector::borrow(&tmp,i);
+    //         vector::append(&mut data,vector<u8>[*x]);
+    //         i= i+1;
+    //     };
+    //     assert!(remaining>0,999);
+
+    //     let random = from_bcs::to_u8(data) % remaining + 1;
+    //     if (random == 0 )
+    //     {
+    //         random = 1;
+    //     };
+    //     random
+
+    // }
 
 //
     // Tests
