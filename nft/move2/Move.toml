@@ -15,7 +15,7 @@ AptosToken = { local = "../../../aptos-core/aptos-move/framework/aptos-token/"}
 
 [addresses]
 can_coin = "_"
-cannedbi_nft = "_"
+#cannedbi_nft = "_"
 #cannedbi = "_"
 #deployer = "_"
 # change it to `source_addr = "_" when calling `create-resource-account-and-publish-package` from the cli

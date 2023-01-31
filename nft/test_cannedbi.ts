@@ -20,6 +20,15 @@ import { WalletClient , CoinType } from "./wallet_client";
 const PRIVATE_KEY = "0x5e75d0cc8b06b32dc7661ed52a779f43b0f49d78b1ae128139c61237b0b4d1f6";
 const PUBLIC_ADDRESS = "c84a935f76c07f852d1378c6894b7b61ac8780671dc281af5f479b48b4a5afad";
 
+function getRandomInt(max: number) {
+    return Math.floor(Math.random() * max);
+}
+  
+function zeroPad(num :number, places:number) {
+    var zero = places - num.toString().length + 1; 
+    return Array(+(zero > 0 && zero)).join("0") + num;
+}
+
 (async () => {
   // Create API and faucet clients.
   // :!:>section_1
@@ -91,17 +100,31 @@ const PUBLIC_ADDRESS = "c84a935f76c07f852d1378c6894b7b61ac8780671dc281af5f479b48
   console.log(`Owner: ${await walletClient.isAccountRegistered(owner.address().hex(),
     CoinType.CAN)}`);
     //const txnHash2 = 
-    const txnHash2 = await walletClient.registerToken(owner,CoinType.CAN);
-    console.log("=== register Result ===");
+    const txnHash2 = await walletClient.managedRegisterToken(owner,CoinType.CAN);
+    console.log("=== registerToken Result ===");
     console.log(txnHash2);
 
     const txnHash3 = await walletClient.managedMintToken(owner,owner.address().hex(),CoinType.CAN,1000);
-    console.log("=== Mint Result ===");
+    console.log("=== managedMintToken Result ===");
     console.log(txnHash3);
     await client.waitForTransaction(txnHash3, { checkSuccess: true }); // <:!:publish
 
     const canBalance = await coinClient.checkBalance(owner,
         { coinType : walletClient.getCoinType(CoinType.CAN) });
       console.log(`Owner CAN: ${canBalance}`);
+
+    const idx = 2;  
+    const idxStr = zeroPad(idx, 4);
+    const uri_cap = "ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/"+idxStr+".png";
+    const uri_decap = "ipfs://bafybeibcbiix4xlnydklnfg3ympksr6cio4d2muwmulznvd5ep7k7fbzqe/"+idxStr+".png";
+    
+    const txnHash4 = await walletClient.cannedbiCreateToken(owner,
+        "Cannedbi NFT #2","Awesome Cannedbi #2",
+        uri_cap,uri_cap,uri_decap,
+        getRandomInt(10),getRandomInt(10),getRandomInt(10),getRandomInt(10));
+    console.log("=== cannedbiCreateToken Result ===");
+    console.log(txnHash4);
+    await client.waitForTransaction(txnHash4, { checkSuccess: true }); // <:!:publish
+  
 
 })();

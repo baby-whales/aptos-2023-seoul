@@ -12,7 +12,7 @@ import { AnyMxRecord } from "dns";
 //import { TransactionBuilder, TransactionBuilderABI, TxnBuilderTypes } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
 //import { PendingTransaction } from "./dist/index" 
 
-import { CAN_COIN_ADDRESS } from "./common"
+import { CAN_COIN_ADDRESS , CANNEDBI_NFT_ADDRESS } from "./common"
 
 // export interface TxnRequestRaw {
 //     sender: MaybeHexString;
@@ -443,7 +443,7 @@ export class WalletClient {
     }
   }
 
-  async registerToken(
+  async managedRegisterToken(
     account: AptosAccount,
     //receiverAddress: MaybeHexString,
     coin: CoinType
@@ -481,6 +481,35 @@ export class WalletClient {
         function: "0x1::managed_coin::mint",
         type_arguments: [coinType],
         arguments: [receiverAddress, amount],
+      });
+  
+    const bcsTxn = await this.aptosClient.signTransaction(account, rawTxn);
+    const pendingTxn = await this.aptosClient.submitTransaction(bcsTxn);
+  
+    return pendingTxn.hash;
+  }
+
+  // public entry fun create_token(creator: &signer,
+  //   token_name : string::String,
+  //   description : string::String,
+  //   token_uri : string::String,
+  //   uri_cap : string::String,
+  //   uri_decap : string::String,
+  //   stat1 :u8,stat2 :u8,stat3 :u8,stat4 :u8)
+  async cannedbiCreateToken(
+    account: AptosAccount,
+    token_name: String,
+    description: String,
+    token_uri : String,
+    uri_cap : String,
+    uri_decap : String,
+    stat1 : Uint8,stat2: Uint8,stat3: Uint8,stat4: Uint8): Promise<string> {
+    const funcName = `${CANNEDBI_NFT_ADDRESS}::character::create_token`;
+    
+    const rawTxn = await this.aptosClient.generateTransaction(account.address(), {
+        function: funcName,
+        type_arguments: [],
+        arguments: [token_name, description,token_uri,uri_cap,uri_decap,stat1,stat2,stat3,stat4],
       });
   
     const bcsTxn = await this.aptosClient.signTransaction(account, rawTxn);

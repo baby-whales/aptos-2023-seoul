@@ -15,16 +15,17 @@ module cannedbi_nft::character {
     
     
     use aptos_framework::event::{Self, EventHandle};
+    //use aptos_framework::event::{EventHandle};
     
     use aptos_token::token::{Self,TokenDataId};
     
     //use aptos_framework::coin;
-    use aptos_framework::coin::{Self};
-    use aptos_framework::aptos_coin::AptosCoin;
+    //use aptos_framework::coin::{Self};
+    //use aptos_framework::aptos_coin::AptosCoin;
 
     #[test_only]
-    //use aptos_framework::account::create_account_for_test;
-    //use aptos_framework::timestamp;
+    use aptos_framework::account::create_account_for_test;
+    use aptos_framework::timestamp;
     //use aptos_framework::resource_account;
     //use std::vector;
     use aptos_std::debug;
@@ -61,6 +62,9 @@ module cannedbi_nft::character {
     /// `init_module` is automatically called when publishing the module.
     /// In this function, we create an NFT collection 
     fun init_module(creator_signer: &signer) {
+
+        debug::print_stack_trace();
+
         let collection_name = string::utf8(b"Cannedbi Aptos NFT Collection #1");
         let description = string::utf8(b"Cannedbi Aptos NFT Collection");
         let collection_uri = string::utf8(b"http://cannedbi.com");
@@ -75,6 +79,11 @@ module cannedbi_nft::character {
         // when we're minting the NFT
         let (_resource, resource_cap) = account::create_resource_account(creator_signer,  x"2727");
         let resource_signer_from_cap = account::create_signer_with_capability(&resource_cap);
+
+        debug::print<String>(&string::utf8(b"resource_signer_from_cap"));
+        
+        debug::print<signer>(&resource_signer_from_cap);
+
         //let now = aptos_framework::timestamp::now_seconds();
 
         //let resource_signer_cap = resource_account::retrieve_resource_account_cap(resource_signer, @cannedbi_nft);
@@ -102,13 +111,15 @@ module cannedbi_nft::character {
     /// Set if minting is enabled for this minting contract
     public entry fun set_minting_enabled(caller: &signer, minting_enabled: bool) acquires ModuleData {
         let caller_address = signer::address_of(caller);
+        // debug::print<address>(&caller_address);
+        // debug::print<address>(&@admin_addr);
         assert!(caller_address == @admin_addr, error::permission_denied(ENOT_AUTHORIZED));
         let module_data = borrow_global_mut<ModuleData>(@cannedbi_nft);
         module_data.minting_enabled = minting_enabled;
     }
 
-    /// Create and Mint an NFT to the receiver(creator). -> not tested yet
-    /// Only the admin of this module can call this function. -> not tested
+    // Create and Mint an NFT to the receiver(creator). -> not tested yet
+    // Only the admin of this module can call this function. -> not tested
     public entry fun create_token(creator: &signer,
         token_name : string::String,
         description : string::String,
@@ -121,8 +132,8 @@ module cannedbi_nft::character {
         //assert!(receiver_addr == @admin_addr, error::permission_denied(ENOT_AUTHORIZED));
 
         // get the collection minter and check if the collection minting is disabled or expired
+        //let module_data = borrow_global_mut<ModuleData>(@cannedbi_nft);
         let module_data = borrow_global_mut<ModuleData>(@cannedbi_nft);
-        //let module_data = borrow_global_mut<ModuleData>(receiver_addr);
         //assert!(module_data.minting_enabled, error::permission_denied(EMINTING_DISABLED));
 
         //assert!(module_data.minted != module_data.total_supply, error::permission_denied(ESOLD_OUT));
@@ -221,35 +232,35 @@ module cannedbi_nft::character {
 
     }
 
-    /// sell the first token to a claimer
-    /// claimer should know the token name like 'Cannedbi NFT #1'
-    public entry fun claim_genesis_token(claimer: &signer,
-        token_name : string::String) acquires ModuleData {
+    // /// sell the first token to a claimer
+    // /// claimer should know the token name like 'Cannedbi NFT #1'
+    // public entry fun claim_genesis_token(claimer: &signer,
+    //     token_name : string::String) acquires ModuleData {
 
-        //let receiver_addr = signer::address_of(claimer);
+    //     //let receiver_addr = signer::address_of(claimer);
 
-        let module_data = borrow_global_mut<ModuleData>(@cannedbi_nft);
-        let resource_signer = account::create_signer_with_capability(&module_data.signer_cap);
-        let resource_account_address = signer::address_of(&resource_signer);
+    //     let module_data = borrow_global_mut<ModuleData>(@cannedbi_nft);
+    //     let resource_signer = account::create_signer_with_capability(&module_data.signer_cap);
+    //     let resource_account_address = signer::address_of(&resource_signer);
 
-        // let token_data_id = token::create_token_data_id(@cannedbi_nft,
-        //     module_data.collection_name,token_name);
+    //     // let token_data_id = token::create_token_data_id(@cannedbi_nft,
+    //     //     module_data.collection_name,token_name);
         
-        let property_version = 0;
-        let token_id = token::create_token_id_raw(@cannedbi_nft, 
-            module_data.collection_name, token_name, property_version);
+    //     let property_version = 0;
+    //     let token_id = token::create_token_id_raw(@cannedbi_nft, 
+    //         module_data.collection_name, token_name, property_version);
         
-        // the claimer should opt-in direct transfer
-        //token::opt_in_direct_transfer(claimer,true);
+    //     // the claimer should opt-in direct transfer
+    //     //token::opt_in_direct_transfer(claimer,true);
 
-        // check the claimer has the token
-        // take the mint price from the claimer
-        coin::transfer<AptosCoin>(claimer, resource_account_address, module_data.mint_price);
+    //     // check the claimer has the token
+    //     // take the mint price from the claimer
+    //     coin::transfer<AptosCoin>(claimer, resource_account_address, module_data.mint_price);
         
-        // give the token to the claimer
-        token::direct_transfer(&resource_signer, claimer, token_id, 1);
+    //     // give the token to the claimer
+    //     token::direct_transfer(&resource_signer, claimer, token_id, 1);
         
-    }
+    // }
 
     // TODO change cap to decap vice versa
     // TODO change stat1,stat2,stat3,stat4
@@ -260,53 +271,55 @@ module cannedbi_nft::character {
         debug::print_stack_trace();
     }
     // #[test_only]
-    // public fun set_up_test(
-    //     origin_account: &signer,
-    //     resource_account: &signer,
-    //     aptos_framework: signer,
-    //     nft_receiver1: &signer,
-    //     nft_receiver2: &signer,
-    //     timestamp: u64
-    // ) {
-    //     debug::print_stack_trace();
+    public fun set_up_test(
+        origin_account: &signer,
+        //resource_account: &signer,
+        aptos_framework: signer,
+        nft_receiver1: &signer,
+        nft_receiver2: &signer,
+        timestamp: u64
+    ) {
+        //debug::print_stack_trace();
 
-    //     //debug::print<String>(string::utf8(b"set_up_test"));
+        //debug::print<String>(string::utf8(b"set_up_test"));
         
 
-    //     // set up global time for testing purpose
-    //     timestamp::set_time_has_started_for_testing(&aptos_framework);
-    //     timestamp::update_global_time_for_test_secs(timestamp);
+        // set up global time for testing purpose
+        timestamp::set_time_has_started_for_testing(&aptos_framework);
+        timestamp::update_global_time_for_test_secs(timestamp);
 
-    //     create_account_for_test(signer::address_of(origin_account));
+        create_account_for_test(signer::address_of(origin_account));
 
-    //     // create a resource account from the origin account, mocking the module publishing process
-    //     //resource_account::create_resource_account(&origin_account, vector::empty<u8>(), vector::empty<u8>());
+        // create a resource account from the origin account, mocking the module publishing process
+        //resource_account::create_resource_account(&origin_account, vector::empty<u8>(), vector::empty<u8>());
 
-    //     init_module(origin_account);
+        init_module(origin_account);
 
-    //     create_account_for_test(signer::address_of(nft_receiver1));
-    //     create_account_for_test(signer::address_of(nft_receiver2));
+        create_account_for_test(signer::address_of(nft_receiver1));
+        create_account_for_test(signer::address_of(nft_receiver2));
 
-    //     create_account_for_test(@admin_addr);
-    // }
+        //create_account_for_test(@admin_addr);
+    }
 
-    #[test (origin_account = @0xc84a935f76c07f852d1378c6894b7b61ac8780671dc281af5f479b48b4a5afad,
-        nft_receiver1 = @0x123, nft_receiver2 = @0x234)]
-    //#[test(aptos_framework = @aptos_framework)]
-    public entry fun test_happy_path(origin_account: signer, nft_receiver1: signer, nft_receiver2: signer) acquires ModuleData {
+    #[test (origin_account = @0xcafe, 
+        nft_receiver1 = @0x123, nft_receiver2 = @0x234, aptos_framework = @aptos_framework,
+        )]
+    public entry fun test_happy_path(origin_account: signer, nft_receiver1: signer, nft_receiver2: signer, aptos_framework: signer) 
+        acquires ModuleData {
         
+        debug::print<String>(&string::utf8(b"test_happy_path"));
         
-        //set_up_test(&origin_account, &resource_account, aptos_framework, &nft_receiver1, &nft_receiver2,10);
+        set_up_test(&origin_account, aptos_framework, &nft_receiver1, &nft_receiver2,10);
         
         debug::print_stack_trace();
 
-        //debug::print<string>(string::utf8(b"test_happy_path"));
-        
+        //set_minting_enabled(&origin_account, true);
+
         let receiver_addr1 = signer::address_of(&nft_receiver1);
         debug::print<address>(&receiver_addr1);
         let receiver_addr2 = signer::address_of(&nft_receiver2);
         debug::print<address>(&receiver_addr2);
-        
+ 
         // todo console log??
         create_token(&origin_account,
             string::utf8(b"nft#1"),
@@ -317,48 +330,48 @@ module cannedbi_nft::character {
             1,2,3,4
         );
 
-        create_token(&origin_account,
-            string::utf8(b"nft#2"),
-            string::utf8(b"desc#2"),
-            string::utf8(b"uri"),
-            string::utf8(b"uri cap"),
-            string::utf8(b"uri decap"),
-            2,2,3,4
-        );
+        // create_token(&origin_account,
+        //     string::utf8(b"nft#2"),
+        //     string::utf8(b"desc#2"),
+        //     string::utf8(b"uri"),
+        //     string::utf8(b"uri cap"),
+        //     string::utf8(b"uri decap"),
+        //     2,2,3,4
+        // );
 
-        create_token(&origin_account,
-            string::utf8(b"nft#3"),
-            string::utf8(b"desc#3"),
-            string::utf8(b"uri"),
-            string::utf8(b"uri cap"),
-            string::utf8(b"uri decap"),
-            3,2,3,4
-        );
+        // create_token(&origin_account,
+        //     string::utf8(b"nft#3"),
+        //     string::utf8(b"desc#3"),
+        //     string::utf8(b"uri"),
+        //     string::utf8(b"uri cap"),
+        //     string::utf8(b"uri decap"),
+        //     3,2,3,4
+        // );
 
-        // mint nft to this nft receiver1
-        claim_genesis_token(&nft_receiver1, string::utf8(b"nft#1"));
+        // // mint nft to this nft receiver1
+        // claim_genesis_token(&nft_receiver1, string::utf8(b"nft#1"));
         
-        // check that the nft_receiver has the token in their token store
-        let module_data = borrow_global_mut<ModuleData>(@cannedbi_nft);
-        let resource_signer = account::create_signer_with_capability(&module_data.signer_cap);
-        let resource_signer_addr = signer::address_of(&resource_signer);
-        let token_id = token::create_token_id_raw(resource_signer_addr, 
-            string::utf8(b"Cannedbi Aptos NFT Collection #1"), 
-            string::utf8(b"nft#2"), 1);
-        let new_token = token::withdraw_token(&nft_receiver1, token_id, 1);
+        // // check that the nft_receiver has the token in their token store
+        // let module_data = borrow_global_mut<ModuleData>(@cannedbi_nft);
+        // let resource_signer = account::create_signer_with_capability(&module_data.signer_cap);
+        // let resource_signer_addr = signer::address_of(&resource_signer);
+        // let token_id = token::create_token_id_raw(resource_signer_addr, 
+        //     string::utf8(b"Cannedbi Aptos NFT Collection #1"), 
+        //     string::utf8(b"nft#2"), 1);
+        // let new_token = token::withdraw_token(&nft_receiver1, token_id, 1);
 
-        // put the token back since a token isn't droppable
-        token::deposit_token(&nft_receiver1, new_token);
+        // // put the token back since a token isn't droppable
+        // token::deposit_token(&nft_receiver1, new_token);
 
-        // mint the second NFT
-        claim_genesis_token(&nft_receiver2, string::utf8(b"nft#2"));
+        // // mint the second NFT
+        // claim_genesis_token(&nft_receiver2, string::utf8(b"nft#2"));
 
-        //  check the property version is properly updated
-        let token_id2 = token::create_token_id_raw(resource_signer_addr, 
-            string::utf8(b"Cannedbi Aptos NFT Collection #1"), 
-            string::utf8(b"nft#2"), 1);
-        let new_token2 = token::withdraw_token(&nft_receiver2, token_id2, 1);
-        token::deposit_token(&nft_receiver2, new_token2);
+        // //  check the property version is properly updated
+        // let token_id2 = token::create_token_id_raw(resource_signer_addr, 
+        //     string::utf8(b"Cannedbi Aptos NFT Collection #1"), 
+        //     string::utf8(b"nft#2"), 1);
+        // let new_token2 = token::withdraw_token(&nft_receiver2, token_id2, 1);
+        // token::deposit_token(&nft_receiver2, new_token2);
     }
 
 
