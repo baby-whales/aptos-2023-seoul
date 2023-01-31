@@ -25,8 +25,8 @@ module cannedbi_nft::character {
     use aptos_framework::coin::{Self};
     use aptos_framework::aptos_coin::AptosCoin;
 
-    // #[test_only]
-    // use aptos_framework::account::create_account_for_test;
+    #[test_only]
+    use aptos_framework::account::create_account_for_test;
 
     // This struct stores the token receiver's address and token_data_id in the event of token minting
     struct TokenMintingEvent has drop, store {
@@ -135,7 +135,7 @@ module cannedbi_nft::character {
         //let stat2 = pseudo_random_u8(receiver_addr,10);
         //let stat3 = pseudo_random_u8(receiver_addr,10);
         //let stat4 = pseudo_random_u8(receiver_addr,10);
-        let badge1 = 0;
+        let level = 0;
         // Create a token data id to specify the token to be minted.
         //  https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token.move
         let token_data_id = token::create_tokendata(
@@ -161,7 +161,7 @@ module cannedbi_nft::character {
                 string::utf8(b"stat2"), 
                 string::utf8(b"stat3"), 
                 string::utf8(b"stat4"), 
-                string::utf8(b"badge1")],
+                string::utf8(b"level")],
             vector<vector<u8>>[bcs::to_bytes<bool>(&token_property_mutable),
                 bcs::to_bytes(&uri_cap),
                 bcs::to_bytes(&uri_decap),
@@ -170,7 +170,7 @@ module cannedbi_nft::character {
                 bcs::to_bytes<u8>(&stat2),
                 bcs::to_bytes<u8>(&stat3),
                 bcs::to_bytes<u8>(&stat4),
-                bcs::to_bytes<u64>(&badge1)
+                bcs::to_bytes<u64>(&level)
             ],
             vector<String>[ string::utf8(b"bool") ,
                 string::utf8(b"string"),
@@ -209,6 +209,7 @@ module cannedbi_nft::character {
     }
 
     /// sell the first token to a claimer
+    /// claimer should know the token name like 'Cannedbi NFT #1'
     public entry fun claim_genesis_token(claimer: &signer,
         token_name : string::String) acquires ModuleData {
 
@@ -241,91 +242,94 @@ module cannedbi_nft::character {
     // TODO change stat1,stat2,stat3,stat4
     // TODO change badge1
 
+    #[test_only]
+    public fun set_up_test(
+        origin_account: signer,
+        resource_account: &signer,
+        aptos_framework: signer,
+        nft_receiver1: &signer,
+        nft_receiver2: &signer,
+        timestamp: u64
+    ) {
+        // set up global time for testing purpose
+        timestamp::set_time_has_started_for_testing(&aptos_framework);
+        timestamp::update_global_time_for_test_secs(timestamp);
 
-    // fun pseudo_random(add:address,remaining:u64):u64
-    // {
-    //     let x = bcs::to_bytes(&add);
-    //     let y = bcs::to_bytes(&remaining);
-    //     let z = bcs::to_bytes(&timestamp::now_seconds());
-    //     vector::append(&mut x,y);
-    //     vector::append(&mut x,z);
-    //     let tmp = hash::sha2_256(x);
+        create_account_for_test(signer::address_of(&origin_account));
 
-    //     let data = vector<u8>[];
-    //     let i =24;
-    //     while (i < 32)
-    //     {
-    //         let x =vector::borrow(&tmp,i);
-    //         vector::append(&mut data,vector<u8>[*x]);
-    //         i= i+1;
-    //     };
-    //     assert!(remaining>0,999);
+        // create a resource account from the origin account, mocking the module publishing process
+        resource_account::create_resource_account(&origin_account, vector::empty<u8>(), vector::empty<u8>());
 
-    //     let random = from_bcs::to_u64(data) % remaining + 1;
-    //     if (random == 0 )
-    //     {
-    //         random = 1;
-    //     };
-    //     random
+        init_module(resource_account);
 
-    // }
-    // fun pseudo_random_u8(add:address,remaining:u8):u8
-    // {
-    //     let x = bcs::to_bytes(&add);
-    //     let y = bcs::to_bytes(&remaining);
-    //     let z = bcs::to_bytes(&timestamp::now_seconds());
-    //     vector::append(&mut x,y);
-    //     vector::append(&mut x,z);
-    //     let tmp = hash::sha2_256(x);
+        create_account_for_test(signer::address_of(nft_receiver1));
+        create_account_for_test(signer::address_of(nft_receiver2));
 
-    //     let data = vector<u8>[];
-    //     let i =24;
-    //     while (i < 32)
-    //     {
-    //         let x =vector::borrow(&tmp,i);
-    //         vector::append(&mut data,vector<u8>[*x]);
-    //         i= i+1;
-    //     };
-    //     assert!(remaining>0,999);
+        create_account_for_test(@admin_addr);
+    }
 
-    //     let random = from_bcs::to_u8(data) % remaining + 1;
-    //     if (random == 0 )
-    //     {
-    //         random = 1;
-    //     };
-    //     random
+    #[test (origin_account = @0xcafe, resource_account = @0xc3bb8488ab1a5815a9d543d7e41b0e0df46a7396f89b22821f07a4362f75ddc5, nft_receiver1 = @0x123, nft_receiver2 = @0x234, aptos_framework = @aptos_framework)]
+    public entry fun test_happy_path(origin_account: signer, resource_account: signer, nft_receiver1: signer, nft_receiver2: signer, aptos_framework: signer) acquires ModuleData {
+        
+        set_up_test(origin_account, &resource_account, aptos_framework, &nft_receiver1, &nft_receiver2,10);
+        
+        let receiver_addr1 = signer::address_of(&nft_receiver1);
+        let receiver_addr2 = signer::address_of(&nft_receiver2);
 
-    // }
+        // todo console log??
+        create_token(&resource_account,
+            string::utf8(b"nft#1"),
+            string::utf8(b"desc#1"),
+            string::utf8(b"uri"),
+            string::utf8(b"uri cap"),
+            string::utf8(b"uri decap"),
+            1,2,3,4
+        );
 
-//
-    // Tests
-    //
+        create_token(&resource_account,
+            string::utf8(b"nft#2"),
+            string::utf8(b"desc#2"),
+            string::utf8(b"uri"),
+            string::utf8(b"uri cap"),
+            string::utf8(b"uri decap"),
+            2,2,3,4
+        );
 
-    // #[test_only]
-    // public fun set_up_test(
-    //     origin_account: signer,
-    //     resource_account: &signer,
-    //     collection_token_minter_public_key: &ValidatedPublicKey,
-    //     aptos_framework: signer,
-    //     nft_receiver: &signer,
-    //     timestamp: u64
-    // ) acquires ModuleData {
-    //     // set up global time for testing purpose
-    //     timestamp::set_time_has_started_for_testing(&aptos_framework);
-    //     timestamp::update_global_time_for_test_secs(timestamp);
+        create_token(&resource_account,
+            string::utf8(b"nft#3"),
+            string::utf8(b"desc#3"),
+            string::utf8(b"uri"),
+            string::utf8(b"uri cap"),
+            string::utf8(b"uri decap"),
+            3,2,3,4
+        );
 
-    //     create_account_for_test(signer::address_of(&origin_account));
+        // mint nft to this nft receiver1
+        claim_genesis_token(&nft_receiver1, string::utf8(b"nft#1"));
+        
+        // check that the nft_receiver has the token in their token store
+        let module_data = borrow_global_mut<ModuleData>(@cannedbi_nft);
+        let resource_signer = account::create_signer_with_capability(&module_data.signer_cap);
+        let resource_signer_addr = signer::address_of(&resource_signer);
+        let token_id = token::create_token_id_raw(resource_signer_addr, 
+            string::utf8(b"Cannedbi Aptos NFT Collection #1"), 
+            string::utf8(b"nft#2"), 1);
+        let new_token = token::withdraw_token(&nft_receiver1, token_id, 1);
 
-    //     // create a resource account from the origin account, mocking the module publishing process
-    //     resource_account::create_resource_account(&origin_account, vector::empty<u8>(), vector::empty<u8>());
+        // put the token back since a token isn't droppable
+        token::deposit_token(&nft_receiver1, new_token);
 
-    //     init_module(resource_account);
+        // mint the second NFT
+        claim_genesis_token(&nft_receiver2, string::utf8(b"nft#2"));
 
-    //     let admin = create_account_for_test(@admin_addr);
-    //     //let pk_bytes = ed25519::validated_public_key_to_bytes(collection_token_minter_public_key);
-    //     //set_public_key(&admin, pk_bytes);
+        //  check the property version is properly updated
+        let token_id2 = token::create_token_id_raw(resource_signer_addr, 
+            string::utf8(b"Cannedbi Aptos NFT Collection #1"), 
+            string::utf8(b"nft#2"), 1);
+        let new_token2 = token::withdraw_token(&nft_receiver2, token_id2, 1);
+        token::deposit_token(&nft_receiver2, new_token2);
+    }
 
-    //     create_account_for_test(signer::address_of(nft_receiver));
-    // }
+
 
 }
