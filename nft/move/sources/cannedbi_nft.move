@@ -59,7 +59,7 @@ module cannedbi_nft::character {
 
     /// `init_module` is automatically called when publishing the module.
     /// In this function, we create an NFT collection 
-    fun init_module(resource_signer: &signer) {
+    fun init_module(creator_signer: &signer) {
         let collection_name = string::utf8(b"Cannedbi Aptos NFT Collection #1");
         let description = string::utf8(b"Cannedbi Aptos NFT Collection");
         let collection_uri = string::utf8(b"http://cannedbi.com");
@@ -69,25 +69,32 @@ module cannedbi_nft::character {
         // This variable sets if we want to allow mutation for collection description, uri, and maximum.
         let mutate_setting = vector<bool>[ true, true, true ];
 
-        // Create the nft collection.
-        token::create_collection(resource_signer, collection_name, description, collection_uri, maximum_supply, mutate_setting);
 
         // store the token data id within the module, so we can refer to it later
         // when we're minting the NFT
-        let resource_signer_cap = resource_account::retrieve_resource_account_cap(resource_signer, @source_addr);
+        let (_resource, resource_cap) = account::create_resource_account(creator_signer,  x"2727");
+        let resource_signer_from_cap = account::create_signer_with_capability(&resource_cap);
+        //let now = aptos_framework::timestamp::now_seconds();
+
+        //let resource_signer_cap = resource_account::retrieve_resource_account_cap(resource_signer, @cannedbi_nft);
         // move_to<ResourceInfo>(&resource_signer_from_cap, 
         //     ResourceInfo{signer_cap: resource_signer_cap, 
         //     source: @source_addr});
         
-        move_to(resource_signer, ModuleData {
-            signer_cap: resource_signer_cap,
+        move_to(&resource_signer_from_cap, ModuleData {
+            signer_cap: resource_cap,
             minting_enabled: true,
-            token_minting_events: account::new_event_handle<TokenMintingEvent>(resource_signer),
+            token_minting_events: account::new_event_handle<TokenMintingEvent>(creator_signer),
             collection_name : collection_name,
             total_supply : total_supply,
             minted : 0,
             mint_price : 500,
         });
+
+        // Create the nft collection.
+        token::create_collection(&resource_signer_from_cap, 
+            collection_name, description, collection_uri, maximum_supply, mutate_setting);
+
 
     }
 

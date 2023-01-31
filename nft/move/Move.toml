@@ -15,11 +15,13 @@ AptosToken = { local = "../../../aptos-core/aptos-move/framework/aptos-token/"}
 
 [addresses]
 can_coin = "_"
-cannedbi_nft = "_"
+#cannedbi_nft = "_"
 #cannedbi = "_"
 #deployer = "_"
 # change it to `source_addr = "_" when calling `create-resource-account-and-publish-package` from the cli
 #source_addr = "_"
 
-# replace the admin_addr with the actual admin address we created using CLI
+# change it to the actual source address when publishing the module
+#source_addr = "0xcafe"
+# change it to the actual admin address when publishing the module
 admin_addr = "_"
