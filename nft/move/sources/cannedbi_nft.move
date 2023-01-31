@@ -1,4 +1,5 @@
-module cannedbi_nft::create_nft {
+// objective : create a Character NFT collection and mint NFTs 
+module cannedbi_nft::character {
     use std::bcs;
     use aptos_std::from_bcs;
     use std::hash;
