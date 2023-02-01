@@ -1,6 +1,6 @@
 [package]
 name = "CANNEDBI"
-version = "0.0.1"
+version = "0.0.2"
 upgrade_policy = "compatible"
 
 [dependencies]

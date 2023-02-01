@@ -24,11 +24,12 @@ module cannedbi_nft::character {
     use aptos_framework::coin::{Self};
     use aptos_framework::aptos_coin::AptosCoin;
 
-    #[test_only]
     //use aptos_framework::account::create_account_for_test;
     //use aptos_framework::timestamp;
     //use aptos_framework::resource_account;
+    #[test_only]
     use std::vector;
+    #[test_only]
     use aptos_std::debug;
 
     // This struct stores the token receiver's address and token_data_id in the event of token minting
@@ -73,6 +74,8 @@ module cannedbi_nft::character {
     const INVALID_SIGNER: u64 = 0;
     /// Action not authorized because the signer is not the admin of this module
     const ENOT_AUTHORIZED: u64 = 1;
+    ///  INVALID_MINT_PRICE
+    const INVALID_MINT_PRICE: u64 = 2;
     /// The collection minting is disabled
     const EMINTING_DISABLED: u64 = 3;
     /// Royalty numerator and denominator are invalid
@@ -94,13 +97,44 @@ module cannedbi_nft::character {
     // const INVALID_MUTABLE_CONFIG:u64 = 7;
     // const EINVALID_MINT_TIME:u64 = 8;
     // const MINT_LIMIT_EXCEED: u64 = 9;
-
     public entry fun init_collection(
         account: &signer,
         royalty_payee_address:address,
         collection_name: String,
         collection_description: String,
         collection_uri: String,
+        seeds: vector<u8>
+    ) {
+        init_cannedbi_collection(account,
+            royalty_payee_address,
+            collection_name,collection_description,collection_uri,
+            seeds);
+    }
+
+    public fun init_cannedbi_collection(
+        account: &signer,
+        royalty_payee_address:address,
+        collection_name: String,
+        collection_description: String,
+        collection_uri: String,
+        seeds: vector<u8>
+    ) {
+        init_general_collection(account,
+            royalty_payee_address,
+            collection_name,collection_description,collection_uri,
+            10000000000,
+            2727,
+            seeds);
+    }
+
+    public fun init_general_collection(
+        account: &signer,
+        royalty_payee_address:address,
+        collection_name: String,
+        collection_description: String,
+        collection_uri: String,
+        max_supply : u64,
+        total_supply : u64,
         seeds: vector<u8>
     ){
         let (_resource, resource_cap) = account::create_resource_account(account, seeds);
@@ -117,10 +151,10 @@ module cannedbi_nft::character {
             royalty_payee_address,
             royalty_points_denominator:100,
             royalty_points_numerator:1,
-            mint_price:1000,
+            mint_price:0,// default mint price is 0
             paused:false,
-            max_supply:10000000000,
-            total_supply:2727,
+            max_supply,//max_supply:10000000000,
+            total_supply,//2727:total_supply,
             minted:0,
             token_mutate_setting,
         });
@@ -129,41 +163,12 @@ module cannedbi_nft::character {
             collection_name, 
             collection_description, 
             collection_uri, 
-            2727,//maximum
+            total_supply,//maximum 2727
             collection_mutate_setting
         );
     }
 
-    #[test_only]
-    public fun set_up_test(
-        creator: &signer,
-        aptos_framework: &signer,
-        minter: &signer,
-        token_machine: &signer,
-        timestamp: u64 )
-    {
-        account::create_account_for_test(signer::address_of(creator));
-        account::create_account_for_test(signer::address_of(minter));
-        let (burn_cap, mint_cap) = aptos_framework::aptos_coin::initialize_for_test(aptos_framework);
-        coin::register<0x1::aptos_coin::AptosCoin>(minter);
-        coin::register<0x1::aptos_coin::AptosCoin>(creator);
-        coin::deposit(signer::address_of(minter), coin::mint(1000, &mint_cap));
-        coin::deposit(signer::address_of(creator), coin::mint(100, &mint_cap));
-        coin::destroy_burn_cap(burn_cap);
-        coin::destroy_mint_cap(mint_cap);
-        aptos_framework::timestamp::set_time_has_started_for_testing(token_machine);
-        aptos_framework::timestamp::update_global_time_for_test_secs(timestamp);
-        init_collection(
-                creator,
-                signer::address_of(creator),
-                string::utf8(b"Cannedbi Aptos NFT Collection #1"),
-                string::utf8(b"Awesome Cannedbi Aptos NFT Collection"),
-                string::utf8(b"https://cannedbi.com"),
-                b"cannedbi"
-            );
-    }
-
-    public entry fun mint_script(
+    public entry fun mint_script_v1(
         receiver: &signer,
         token_machine: address,
         token_name : string::String,
@@ -172,7 +177,6 @@ module cannedbi_nft::character {
         uri_cap : string::String,
         uri_decap : string::String,
         stat1 :u8,stat2 :u8,stat3 :u8,stat4 :u8
-
     ) acquires ResourceInfo, TokenMachine {
         let receiver_addr = signer::address_of(receiver);
         let resource_data = borrow_global<ResourceInfo>(token_machine);
@@ -233,8 +237,13 @@ module cannedbi_nft::character {
         // let token_data_id = token::create_token_data_id(token_machine,
         //     token_machine_data.collection_name,token_name);
         token::opt_in_direct_transfer(receiver,true);
+
         let mint_price = token_machine_data.mint_price;
-        coin::transfer<AptosCoin>(receiver, resource_data.source, mint_price);
+        //assert!(mint_price >= 0, INVALID_MINT_PRICE);
+        if ( mint_price > 0 ) {
+            coin::transfer<AptosCoin>(receiver, resource_data.source, mint_price);
+        };
+
         token::mint_token_to(
             &resource_signer_from_cap,
             receiver_addr,
@@ -350,6 +359,35 @@ module cannedbi_nft::character {
     //     token::mutate_one_token(&resource_signer_from_cap,token_owner,token_id,keys,values,types);
     // }
 
+    #[test_only]
+    public fun set_up_test(
+        creator: &signer,
+        aptos_framework: &signer,
+        minter: &signer,
+        token_machine: &signer,
+        timestamp: u64 )
+    {
+        account::create_account_for_test(signer::address_of(creator));
+        account::create_account_for_test(signer::address_of(minter));
+        let (burn_cap, mint_cap) = aptos_framework::aptos_coin::initialize_for_test(aptos_framework);
+        coin::register<0x1::aptos_coin::AptosCoin>(minter);
+        coin::register<0x1::aptos_coin::AptosCoin>(creator);
+        coin::deposit(signer::address_of(minter), coin::mint(1000, &mint_cap));
+        coin::deposit(signer::address_of(creator), coin::mint(100, &mint_cap));
+        coin::destroy_burn_cap(burn_cap);
+        coin::destroy_mint_cap(mint_cap);
+        aptos_framework::timestamp::set_time_has_started_for_testing(token_machine);
+        aptos_framework::timestamp::update_global_time_for_test_secs(timestamp);
+        init_collection(
+                creator,
+                signer::address_of(creator),
+                string::utf8(b"Cannedbi Aptos NFT Collection #1"),
+                string::utf8(b"Awesome Cannedbi Aptos NFT Collection"),
+                string::utf8(b"https://cannedbi.com"),
+                b"cannedbi"
+            );
+    }
+
     #[test]
     public entry fun test1() {
         debug::print_stack_trace();
@@ -393,7 +431,7 @@ module cannedbi_nft::character {
         let stat3 = 3;
         let stat4 = 4;
 
-        mint_script(
+        mint_script_v1(
             minter,
             token_machine_addr,
             string::utf8(b"Cannedbi NFT #1"),//token_name : string::String,
@@ -426,7 +464,7 @@ module cannedbi_nft::character {
         let stat3 = 3;
         let stat4 = 4;
 
-        mint_script(
+        mint_script_v1(
             minter,
             token_machine_addr,
             string::utf8(b"Cannedbi NFT #3"),//token_name : string::String,
@@ -466,7 +504,7 @@ module cannedbi_nft::character {
         let stat3 = 3;
         let stat4 = 4;
 
-        mint_script(
+        mint_script_v1(
             minter,
             token_machine_addr,
             string::utf8(b"Cannedbi NFT #4"),//token_name : string::String,
@@ -514,7 +552,7 @@ module cannedbi_nft::character {
         let stat3 = 3;
         let stat4 = 4;
 
-        mint_script(
+        mint_script_v1(
             minter,
             token_machine_addr,
             string::utf8(b"Cannedbi NFT #5"),//token_name : string::String,

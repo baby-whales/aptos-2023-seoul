@@ -552,7 +552,7 @@ export class WalletClient {
     uri_cap : String,
     uri_decap : String,
     stat1 : Uint8,stat2: Uint8,stat3: Uint8,stat4: Uint8): Promise<string> {
-    const funcName = `${CANNEDBI_NFT_ADDRESS}::character::mint_script`;
+    const funcName = `${CANNEDBI_NFT_ADDRESS}::character::mint_script_v1`;
     
     const rawTxn = await this.aptosClient.generateTransaction(account.address(), {
         function: funcName,
