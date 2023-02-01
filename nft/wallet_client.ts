@@ -529,10 +529,11 @@ export class WalletClient {
     const results = await this.aptosClient.waitForTransactionWithResult(pendingTxn.hash);
     console.log("cannedbiCreateCollection results:",results);
 
-    //const addr = results['changes'][2]['address'];
-    //console.log("cannedbiCreateCollection token_machine_addr:",addr);
+    // this is the address of the newly created collection
+    const addr = results['changes'][2]['address'];
+    console.log("cannedbiCreateCollection token_machine_addr:",addr);
 
-    return pendingTxn.hash;
+    return addr;//pendingTxn.hash;
   }
 
   // public entry fun create_token(creator: &signer,
