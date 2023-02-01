@@ -313,6 +313,43 @@ module cannedbi_nft::character {
         token::mutate_tokendata_property(&resource_signer_from_cap,token_data_id,keys,values,types);  
     }
 
+    public entry fun mutate_tokendata_uri(
+        account: &signer,
+        token_machine: address,
+        token_name: String,
+        uri: String,
+    ) acquires ResourceInfo,TokenMachine
+    {
+        let account_addr = signer::address_of(account);
+        let resource_data = borrow_global<ResourceInfo>(token_machine);
+        assert!(resource_data.source == account_addr, INVALID_SIGNER);
+        let resource_signer_from_cap = account::create_signer_with_capability(&resource_data.resource_cap);
+
+        let token_machine_data = borrow_global<TokenMachine>(token_machine); 
+        let token_data_id = token::create_token_data_id(token_machine,
+            token_machine_data.collection_name,token_name);
+
+        token::mutate_tokendata_uri(&resource_signer_from_cap,token_data_id,uri);
+    }
+
+    // mutate owner's token's property
+    // public entry fun mutate_one_token(
+    //     account: &signer,
+    //     token_machine: address,
+    //     token_owner: address,
+    //     token_id: TokenId,
+    //     keys: vector<String>,
+    //     values: vector<vector<u8>>,
+    //     types: vector<String>,
+    // )acquires ResourceInfo
+    // {
+    //     let account_addr = signer::address_of(account);
+    //     let resource_data = borrow_global<ResourceInfo>(token_machine);
+    //     assert!(resource_data.source == account_addr, INVALID_SIGNER);
+    //     let resource_signer_from_cap = account::create_signer_with_capability(&resource_data.resource_cap);
+    //     token::mutate_one_token(&resource_signer_from_cap,token_owner,token_id,keys,values,types);
+    // }
+
     #[test]
     public entry fun test1() {
         debug::print_stack_trace();
@@ -455,6 +492,50 @@ module cannedbi_nft::character {
             vector::empty()
         );
     }
+
+    #[test(creator = @0xb0c, minter = @0xc0c, token_machine=@0x1,aptos_framework = @aptos_framework)]
+    public entry fun test_token_machine5(
+            creator: &signer,
+            aptos_framework: &signer,
+            minter: &signer,
+            token_machine: &signer
+        ) acquires ResourceInfo,TokenMachine
+    {
+        set_up_test(creator,aptos_framework,minter,token_machine,80);
+        aptos_framework::timestamp::update_global_time_for_test_secs(102);
+
+        let token_machine_addr = account::create_resource_address(&signer::address_of(creator), b"cannedbi");
+
+        let uri = string::utf8(b"ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/0005.png");
+        let uri_cap = string::utf8(b"ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/0005.png");
+        let uri_decap = string::utf8(b"ipfs://bafybeibcbiix4xlnydklnfg3ympksr6cio4d2muwmulznvd5ep7k7fbzqe/0005.png");
+        let stat1 = 1;
+        let stat2 = 2;
+        let stat3 = 3;
+        let stat4 = 4;
+
+        mint_script(
+            minter,
+            token_machine_addr,
+            string::utf8(b"Cannedbi NFT #5"),//token_name : string::String,
+            string::utf8(b"Awesome Cannedbi NFT #5"),//description : string::String,
+            uri,//token_uri : string::String,
+            uri_cap,//uri_cap : string::String,
+            uri_decap,//uri_decap : string::String,
+            stat1,stat2,stat3,stat4
+        );
+
+
+        // account: &signer,
+        // token_machine: address,
+        // token_name: String,
+        // uri: String,
+        mutate_tokendata_uri(creator,
+            token_machine_addr,
+            string::utf8(b"Cannedbi NFT #5"),
+            string::utf8(b"ipfs://bafybeibcbiix4xlnydklnfg3ympksr6cio4d2muwmulznvd5ep7k7fbzqe/0005.png")
+        );
+    }    
 
     // fun num_str(num: u64): String
     // {
