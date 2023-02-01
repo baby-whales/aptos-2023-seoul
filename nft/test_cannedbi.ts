@@ -113,23 +113,25 @@ function zeroPad(num :number, places:number) {
         { coinType : walletClient.getCoinType(CoinType.CAN) });
       console.log(`Owner CAN: ${canBalance}`);
 
-    const txnHash4 = await walletClient.cannedbiCreateCollection(owner,owner.address().hex(),
+    const newTokenMachineAddr = await walletClient.cannedbiCreateCollection(owner,owner.address().hex(),
        "Cannedbi NFT Collection no.2","Awesome Cannedbi Collection #2","https://cannedbi.com");
     console.log("=== cannedbiCreateCollection Result ===");
-    console.log(txnHash4);
+    console.log("newTokenMachineAddr:"+newTokenMachineAddr);
 
-    // const idx = 2;  
-    // const idxStr = zeroPad(idx, 4);
-    // const uri_cap = "ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/"+idxStr+".png";
-    // const uri_decap = "ipfs://bafybeibcbiix4xlnydklnfg3ympksr6cio4d2muwmulznvd5ep7k7fbzqe/"+idxStr+".png";
+    const idx = 2;  
+    const idxStr = zeroPad(idx, 4);
+    const uri_cap = "ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/"+idxStr+".png";
+    const uri_decap = "ipfs://bafybeibcbiix4xlnydklnfg3ympksr6cio4d2muwmulznvd5ep7k7fbzqe/"+idxStr+".png";
     
-    // const txnHash4 = await walletClient.cannedbiCreateToken(owner,
-    //     "Cannedbi NFT #2","Awesome Cannedbi #2",
-    //     uri_cap,uri_cap,uri_decap,
-    //     getRandomInt(10),getRandomInt(10),getRandomInt(10),getRandomInt(10));
-    // console.log("=== cannedbiCreateToken Result ===");
-    // console.log(txnHash4);
-    // await client.waitForTransaction(txnHash4, { checkSuccess: true }); // <:!:publish
+    const txnHash4 = await walletClient.cannedbiCreateToken(owner,
+        newTokenMachineAddr,
+        "Cannedbi NFT #2","Awesome Cannedbi #2",
+        uri_cap,uri_cap,uri_decap,
+        getRandomInt(10),getRandomInt(10),getRandomInt(10),getRandomInt(10));
+    console.log("=== cannedbiCreateToken Result ===");
+    const txnHash4Result = await client.waitForTransactionWithResult(txnHash4); // <:!:publish
+    console.log(txnHash4Result);
+    
   
 
 })();
