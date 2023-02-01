@@ -4,6 +4,75 @@
 * https://nft.storage/docs/how-to/store-directory/#creating-a-project
 
 
+## new badge files 2
+
+```bash
+node storeDirectory.mjs /Users/cpp.wdshin/work-aptos/aptos-2023-seoul/nft/resources/new_badges
+```
+
+* Q -> 0
+* R -> 1
+* G -> 2
+* B -> 3
+* P -> 4
+* BR -> 5
+
+```bash
+{ cid: 'bafybeidggmnrjz7l74nvqmfryjnvslbubfkq5avc3bbqjmzmib7i5cpwiy' }
+{
+  cid: 'bafybeidggmnrjz7l74nvqmfryjnvslbubfkq5avc3bbqjmzmib7i5cpwiy',
+  deals: [],
+  size: 40236,
+  pin: {
+    cid: 'bafybeidggmnrjz7l74nvqmfryjnvslbubfkq5avc3bbqjmzmib7i5cpwiy',
+    created: 2023-02-01T13:47:23.022Z,
+    size: 40236,
+    status: 'pinned'
+  },
+  created: 2023-02-01T13:47:23.022Z
+}
+```
+
+* ipfs://bafybeidggmnrjz7l74nvqmfryjnvslbubfkq5avc3bbqjmzmib7i5cpwiy/0.svg
+* 0 -> QUESTION
+* 1 -> RED
+* 2 -> GREEN
+* 3 -> BLUE
+* 4 -> PURPLE
+* 5 -> BROWN
+
+
+## new badge files
+
+```bash
+node storeDirectory.mjs /Users/cpp.wdshin/work-aptos/aptos-2023-seoul/nft/resources/new_badges
+```
+
+```bash
+{ cid: 'bafybeigmobygz265fnbcpegfy6ho5ocngjebp5sim576ww4zozl7j6m3pq' }
+{
+  cid: 'bafybeigmobygz265fnbcpegfy6ho5ocngjebp5sim576ww4zozl7j6m3pq',
+  deals: [],
+  size: 40281,
+  pin: {
+    cid: 'bafybeigmobygz265fnbcpegfy6ho5ocngjebp5sim576ww4zozl7j6m3pq',
+    created: 2023-02-01T13:33:54.756Z,
+    size: 40281,
+    status: 'pinned'
+  },
+  created: 2023-02-01T13:33:54.756Z
+}
+```
+
+* https://bafybeigmobygz265fnbcpegfy6ho5ocngjebp5sim576ww4zozl7j6m3pq.ipfs.nftstorage.link/
+  
+  * https://bafybeigmobygz265fnbcpegfy6ho5ocngjebp5sim576ww4zozl7j6m3pq.ipfs.nftstorage.link/RED-GEM.svg
+  * https://bafybeigmobygz265fnbcpegfy6ho5ocngjebp5sim576ww4zozl7j6m3pq.ipfs.nftstorage.link/BROWN-GEM.svg
+  * https://bafybeigmobygz265fnbcpegfy6ho5ocngjebp5sim576ww4zozl7j6m3pq.ipfs.nftstorage.link/GREEN-GEM.svg
+  * https://bafybeigmobygz265fnbcpegfy6ho5ocngjebp5sim576ww4zozl7j6m3pq.ipfs.nftstorage.link/PURPLE-GEM.svg
+  * https://bafybeigmobygz265fnbcpegfy6ho5ocngjebp5sim576ww4zozl7j6m3pq.ipfs.nftstorage.link/QUESTION-GEM.svg
+  * https://bafybeigmobygz265fnbcpegfy6ho5ocngjebp5sim576ww4zozl7j6m3pq.ipfs.nftstorage.link/BLUE-GEM.svg
+
 ## cap files
 
 ```bash
