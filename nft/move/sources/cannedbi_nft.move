@@ -15,10 +15,10 @@ module cannedbi_nft::character {
     
     
     //use aptos_framework::event::{Self, EventHandle};
-    use aptos_framework::event::{EventHandle};
+    //use aptos_framework::event::{EventHandle};
     
 
-    use aptos_token::token::{Self,TokenDataId};
+    use aptos_token::token::{Self,TokenDataId,TokenId};
     
     //use aptos_framework::coin;
     use aptos_framework::coin::{Self};
@@ -38,18 +38,6 @@ module cannedbi_nft::character {
         token_data_id: TokenDataId,
     }
 
-    // This struct stores an NFT collection's relevant information
-    // todo to parallelize the minting process, we need to store the information separately.
-    struct ModuleData has key {
-        signer_cap: account::SignerCapability,    
-        minting_enabled: bool,
-        token_minting_events: EventHandle<TokenMintingEvent>,
-        collection_name : String,
-        total_supply: u64,
-        minted: u64,
-        mint_price: u64,
-    }
-
     struct ResourceInfo has key {
         source: address,
         resource_cap: account::SignerCapability
@@ -64,8 +52,8 @@ module cannedbi_nft::character {
         royalty_points_numerator: u64,
         mint_price: u64,
         paused: bool,
-        max_supply : u64,// total supply  < max_supply
-        total_supply: u64,
+        max_supply : u64,// total supply  < max_supply , max_supply is the limit of the collection
+        total_supply: u64,// total_supply is used to compare with minted count
         minted: u64,
         token_mutate_setting:vector<bool>,
     }
@@ -87,16 +75,6 @@ module cannedbi_nft::character {
     /// minting limit is exceeded
     const MINT_LIMIT_EXCEED: u64 = 9;
 
-    // const INVALID_SIGNER: u64 = 0;
-    // const INVALID_amount: u64 = 1;
-    // const CANNOT_ZERO: u64 = 2;
-    // const EINVALID_ROYALTY_NUMERATOR_DENOMINATOR: u64 = 3;
-    // const ESALE_NOT_STARTED: u64 = 4;
-    // const ESOLD_OUT:u64 = 5;
-    // const EPAUSED:u64 = 6;
-    // const INVALID_MUTABLE_CONFIG:u64 = 7;
-    // const EINVALID_MINT_TIME:u64 = 8;
-    // const MINT_LIMIT_EXCEED: u64 = 9;
     public entry fun init_collection(
         account: &signer,
         royalty_payee_address:address,
@@ -142,7 +120,7 @@ module cannedbi_nft::character {
         //let now = aptos_framework::timestamp::now_seconds();
         move_to<ResourceInfo>(&resource_signer_from_cap, ResourceInfo{resource_cap: resource_cap, source: signer::address_of(account)});
         let collection_mutate_setting = vector<bool>[true, true, true];//collection description, uri, and maximum.
-        let token_mutate_setting = vector<bool>[false,true,false,false,true];//1,uri,royalty,description, properies
+        let token_mutate_setting = vector<bool>[false,true,true,true,true];//maximum,uri,royalty,description, properies
 
         move_to<TokenMachine>(&resource_signer_from_cap, TokenMachine{
             collection_name,
@@ -341,23 +319,30 @@ module cannedbi_nft::character {
         token::mutate_tokendata_uri(&resource_signer_from_cap,token_data_id,uri);
     }
 
-    // mutate owner's token's property
-    // public entry fun mutate_one_token(
-    //     account: &signer,
-    //     token_machine: address,
-    //     token_owner: address,
-    //     token_id: TokenId,
-    //     keys: vector<String>,
-    //     values: vector<vector<u8>>,
-    //     types: vector<String>,
-    // )acquires ResourceInfo
-    // {
-    //     let account_addr = signer::address_of(account);
-    //     let resource_data = borrow_global<ResourceInfo>(token_machine);
-    //     assert!(resource_data.source == account_addr, INVALID_SIGNER);
-    //     let resource_signer_from_cap = account::create_signer_with_capability(&resource_data.resource_cap);
-    //     token::mutate_one_token(&resource_signer_from_cap,token_owner,token_id,keys,values,types);
-    // }
+    /// mutate owner's token's property
+    /// to use level up things
+    public entry fun mutate_one_token(
+        account: &signer,
+        token_machine: address,
+        token_owner: address,
+        token_id: TokenId,
+        keys: vector<String>,
+        values: vector<vector<u8>>,
+        types: vector<String>,
+    )acquires ResourceInfo
+    {
+        let account_addr = signer::address_of(account);
+        let resource_data = borrow_global<ResourceInfo>(token_machine);
+        assert!(resource_data.source == account_addr, INVALID_SIGNER);
+        let resource_signer_from_cap = account::create_signer_with_capability(&resource_data.resource_cap);
+        // account: &signer,
+        // token_owner: address,
+        // token_id: TokenId,
+        // keys: vector<String>,
+        // values: vector<vector<u8>>,
+        // types: vector<String>,
+        token::mutate_one_token(&resource_signer_from_cap,token_owner,token_id,keys,values,types);
+    }
 
     #[test_only]
     public fun set_up_test(
@@ -373,7 +358,7 @@ module cannedbi_nft::character {
         coin::register<0x1::aptos_coin::AptosCoin>(minter);
         coin::register<0x1::aptos_coin::AptosCoin>(creator);
         coin::deposit(signer::address_of(minter), coin::mint(1000, &mint_cap));
-        coin::deposit(signer::address_of(creator), coin::mint(100, &mint_cap));
+        coin::deposit(signer::address_of(creator), coin::mint(10000, &mint_cap));
         coin::destroy_burn_cap(burn_cap);
         coin::destroy_mint_cap(mint_cap);
         aptos_framework::timestamp::set_time_has_started_for_testing(token_machine);
@@ -575,17 +560,60 @@ module cannedbi_nft::character {
         );
     }    
 
-    // fun num_str(num: u64): String
-    // {
-    //     let v1 = vector::empty();
-    //     while (num/10 > 0){
-    //         let rem = num%10;
-    //         vector::push_back(&mut v1, (rem+48 as u8));
-    //         num = num/10;
-    //     };
-    //     vector::push_back(&mut v1, (num+48 as u8));
-    //     vector::reverse(&mut v1);
-    //     string::utf8(v1)
-    // }
 
+    #[test(creator = @0xb0c, minter = @0xc0c, token_machine=@0x1,aptos_framework = @aptos_framework)]
+    public entry fun test_token_machine6(
+            creator: &signer,
+            aptos_framework: &signer,
+            minter: &signer,
+            token_machine: &signer
+        ) acquires ResourceInfo,TokenMachine
+    {
+        set_up_test(creator,aptos_framework,minter,token_machine,80);
+        aptos_framework::timestamp::update_global_time_for_test_secs(102);
+
+        let token_machine_addr = account::create_resource_address(&signer::address_of(creator), b"cannedbi");
+
+        let uri = string::utf8(b"ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/0006.png");
+        let uri_cap = string::utf8(b"ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/0006.png");
+        let uri_decap = string::utf8(b"ipfs://bafybeibcbiix4xlnydklnfg3ympksr6cio4d2muwmulznvd5ep7k7fbzqe/0006.png");
+        let stat1 = 1;
+        let stat2 = 2;
+        let stat3 = 3;
+        let stat4 = 4;
+
+        let token_name = string::utf8(b"Cannedbi NFT #6");
+        mint_script_v1(
+            minter,
+            token_machine_addr,
+            token_name,//string::utf8(b"Cannedbi NFT #6"),
+            string::utf8(b"Awesome Cannedbi NFT #6"),//description : string::String,
+            uri,//token_uri : string::String,
+            uri_cap,//uri_cap : string::String,
+            uri_decap,//uri_decap : string::String,
+            stat1,stat2,stat3,stat4
+        );
+
+        //let token_machine_data = borrow_global<TokenMachine>(token_machine); 
+        let collection_name = string::utf8(b"Cannedbi Aptos NFT Collection #1");
+        let token_property_version = 0;// how to get latest version?
+        let token_id = token::create_token_id_raw(token_machine_addr, 
+            collection_name, token_name, token_property_version);
+        
+        // account: &signer,
+        // token_machine: address,
+        // token_owner: address,
+        // token_id: TokenId,
+        // keys: vector<String>,
+        // values: vector<vector<u8>>,
+        // types: vector<String>,
+        mutate_one_token(creator,
+            token_machine_addr,
+            signer::address_of(minter),
+            token_id,
+            vector::empty(),
+            vector::empty(),
+            vector::empty()
+        );
+    }  
 }

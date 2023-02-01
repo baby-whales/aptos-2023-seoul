@@ -15,11 +15,11 @@ module cannedbi_nft::badge {
     
     
     //use aptos_framework::event::{Self, EventHandle};
-    use aptos_framework::event::{EventHandle};
+    //use aptos_framework::event::{EventHandle};
     
 
-    use aptos_token::token::{Self,TokenDataId};
-    
+    use aptos_token::token::{Self,TokenDataId,TokenId};
+
     //use aptos_framework::coin;
     use aptos_framework::coin::{Self};
     use aptos_framework::aptos_coin::AptosCoin;
@@ -38,18 +38,6 @@ module cannedbi_nft::badge {
         token_data_id: TokenDataId,
     }
 
-    // This struct stores an NFT collection's relevant information
-    // todo to parallelize the minting process, we need to store the information separately.
-    struct ModuleData has key {
-        signer_cap: account::SignerCapability,    
-        minting_enabled: bool,
-        token_minting_events: EventHandle<TokenMintingEvent>,
-        collection_name : String,
-        total_supply: u64,
-        minted: u64,
-        mint_price: u64,
-    }
-
     struct ResourceInfo has key {
         source: address,
         resource_cap: account::SignerCapability
@@ -64,10 +52,11 @@ module cannedbi_nft::badge {
         royalty_points_numerator: u64,
         mint_price: u64,
         paused: bool,
-        max_supply : u64,// total supply  < max_supply
-        total_supply: u64,
+        max_supply : u64,// total supply  < max_supply , max_supply is the limit of the collection
+        total_supply: u64,// total_supply is used to compare with minted count
         minted: u64,
         token_mutate_setting:vector<bool>,
+        genesis_minted: u64,
     }
 
     /// Invalid signer
@@ -87,16 +76,6 @@ module cannedbi_nft::badge {
     /// minting limit is exceeded
     const MINT_LIMIT_EXCEED: u64 = 9;
 
-    // const INVALID_SIGNER: u64 = 0;
-    // const INVALID_amount: u64 = 1;
-    // const CANNOT_ZERO: u64 = 2;
-    // const EINVALID_ROYALTY_NUMERATOR_DENOMINATOR: u64 = 3;
-    // const ESALE_NOT_STARTED: u64 = 4;
-    // const ESOLD_OUT:u64 = 5;
-    // const EPAUSED:u64 = 6;
-    // const INVALID_MUTABLE_CONFIG:u64 = 7;
-    // const EINVALID_MINT_TIME:u64 = 8;
-    // const MINT_LIMIT_EXCEED: u64 = 9;
     public entry fun init_collection(
         account: &signer,
         royalty_payee_address:address,
@@ -127,6 +106,7 @@ module cannedbi_nft::badge {
             total_supply,//2727:total_supply,
             minted:0,
             token_mutate_setting,
+            genesis_minted:0,
         });
         token::create_collection(
             &resource_signer_from_cap, 
@@ -195,6 +175,38 @@ module cannedbi_nft::badge {
 
         // let token_data_id = token::create_token_data_id(token_machine,
         //     token_machine_data.collection_name,token_name);
+        token::opt_in_direct_transfer(receiver,true);
+
+        let mint_price = token_machine_data.mint_price;
+        //assert!(mint_price >= 0, INVALID_MINT_PRICE);
+        if ( mint_price > 0 ) {
+            coin::transfer<AptosCoin>(receiver, resource_data.source, mint_price);
+        };
+
+        token::mint_token_to(
+            &resource_signer_from_cap,
+            receiver_addr,
+            token_data_id,
+            1
+            );
+        token_machine_data.genesis_minted=token_machine_data.genesis_minted+1;
+        token_machine_data.minted=token_machine_data.minted+1;
+    }
+
+    public entry fun mint_script_v1(
+        receiver: &signer,
+        token_machine: address,
+        token_name : string::String,
+    ) acquires ResourceInfo, TokenMachine {
+        let receiver_addr = signer::address_of(receiver);
+        let resource_data = borrow_global<ResourceInfo>(token_machine);
+        let resource_signer_from_cap = account::create_signer_with_capability(&resource_data.resource_cap);
+        let token_machine_data = borrow_global_mut<TokenMachine>(token_machine);
+        assert!(token_machine_data.paused == false, EPAUSED);
+        assert!(token_machine_data.minted != token_machine_data.total_supply, ESOLD_OUT);
+
+        let token_data_id = token::create_token_data_id(token_machine,
+            token_machine_data.collection_name,token_name);
         token::opt_in_direct_transfer(receiver,true);
 
         let mint_price = token_machine_data.mint_price;
@@ -300,6 +312,31 @@ module cannedbi_nft::badge {
         token::mutate_tokendata_uri(&resource_signer_from_cap,token_data_id,uri);
     }
 
+    /// mutate owner's token's property
+    /// to use level up things
+    public entry fun mutate_one_token(
+        account: &signer,
+        token_machine: address,
+        token_owner: address,
+        token_id: TokenId,
+        keys: vector<String>,
+        values: vector<vector<u8>>,
+        types: vector<String>,
+    )acquires ResourceInfo
+    {
+        let account_addr = signer::address_of(account);
+        let resource_data = borrow_global<ResourceInfo>(token_machine);
+        assert!(resource_data.source == account_addr, INVALID_SIGNER);
+        let resource_signer_from_cap = account::create_signer_with_capability(&resource_data.resource_cap);
+        // account: &signer,
+        // token_owner: address,
+        // token_id: TokenId,
+        // keys: vector<String>,
+        // values: vector<vector<u8>>,
+        // types: vector<String>,
+        token::mutate_one_token(&resource_signer_from_cap,token_owner,token_id,keys,values,types);
+    }
+
     #[test_only]
     public fun set_up_test(
         creator: &signer,
@@ -322,7 +359,7 @@ module cannedbi_nft::badge {
         init_collection(
                 creator,
                 signer::address_of(creator),
-                string::utf8(b"Cannedbi Aptos NFT Collection #1"),
+                string::utf8(b"Cannedbi Aptos Badge Collection #1"),
                 string::utf8(b"Awesome Cannedbi Aptos NFT Collection"),
                 string::utf8(b"https://cannedbi.com"),
                 10000000000,//max_supply
@@ -533,6 +570,73 @@ module cannedbi_nft::badge {
             string::utf8(b"ipfs://bafybeibcbiix4xlnydklnfg3ympksr6cio4d2muwmulznvd5ep7k7fbzqe/0005.png")
         );
     }    
+
+    #[test(creator = @0xb0c, minter = @0xc0c, token_machine=@0x1,aptos_framework = @aptos_framework)]
+    public entry fun test_token_machine6(
+            creator: &signer,
+            aptos_framework: &signer,
+            minter: &signer,
+            token_machine: &signer
+        ) acquires ResourceInfo,TokenMachine
+    {
+        set_up_test(creator,aptos_framework,minter,token_machine,80);
+        aptos_framework::timestamp::update_global_time_for_test_secs(102);
+
+        let token_machine_addr = account::create_resource_address(&signer::address_of(creator), b"cannedbi");
+
+        let token_name = string::utf8(b"Cannedbi Badge #6");
+
+        let uri = string::utf8(b"ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/0005.png");
+        let stat1 = 1;
+        let stat2 = 2;
+        let stat3 = 3;
+        let stat4 = 4;
+
+        // receiver: &signer,
+        // token_machine: address,
+        // token_name : string::String,
+        // description : string::String,
+        // token_uri : string::String,
+        // max_supply : u64,
+        // stat1 :u8,stat2 :u8,stat3 :u8,stat4 :u8
+        mint_genesis_script_v1(
+            minter,
+            token_machine_addr,
+            token_name,//string::utf8(b"Cannedbi Badge #5"),//token_name : string::String,
+            string::utf8(b"Awesome Badge NFT #6"),//description : string::String,
+            uri,//token_uri : string::String,
+            1000,
+            stat1,stat2,stat3,stat4
+        );
+
+        mint_script_v1(
+            minter,
+            token_machine_addr,
+            token_name,//string::utf8(b"Cannedbi NFT #6"),
+        );
+
+        //let token_machine_data = borrow_global<TokenMachine>(token_machine); 
+        let collection_name = string::utf8(b"Cannedbi Aptos Badge Collection #1");
+        let token_property_version = 0;// how to get latest version?
+        let token_id = token::create_token_id_raw(token_machine_addr, 
+            collection_name, token_name, token_property_version);
+        
+        // account: &signer,
+        // token_machine: address,
+        // token_owner: address,
+        // token_id: TokenId,
+        // keys: vector<String>,
+        // values: vector<vector<u8>>,
+        // types: vector<String>,
+        mutate_one_token(creator,
+            token_machine_addr,
+            signer::address_of(minter),
+            token_id,
+            vector::empty(),
+            vector::empty(),
+            vector::empty()
+        );
+    }  
 
 
 }
