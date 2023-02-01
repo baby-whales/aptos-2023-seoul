@@ -17,8 +17,8 @@ import { WalletClient , CoinType } from "./wallet_client";
 //const PRIVATE_KEY = "0x059476ec5425e7878cd6d85250cf66a17539e9ccea89e25a00292c7a102a53af";
 //const PUBLIC_ADDRESS = "0x0f51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34";
 
-const PRIVATE_KEY = "0x5e75d0cc8b06b32dc7661ed52a779f43b0f49d78b1ae128139c61237b0b4d1f6";
-const PUBLIC_ADDRESS = "c84a935f76c07f852d1378c6894b7b61ac8780671dc281af5f479b48b4a5afad";
+const PRIVATE_KEY = "0x56d1e41a8090ca443ee4f9e43f32d014985587058c948862b393bf3107c3c377";
+const PUBLIC_ADDRESS = "d9484c532cfc92f3bb375cfed6eba8046b305c130542ce993bf901293af00dd0";
 
 function getRandomInt(max: number) {
     return Math.floor(Math.random() * max);
@@ -113,18 +113,23 @@ function zeroPad(num :number, places:number) {
         { coinType : walletClient.getCoinType(CoinType.CAN) });
       console.log(`Owner CAN: ${canBalance}`);
 
-    const idx = 2;  
-    const idxStr = zeroPad(idx, 4);
-    const uri_cap = "ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/"+idxStr+".png";
-    const uri_decap = "ipfs://bafybeibcbiix4xlnydklnfg3ympksr6cio4d2muwmulznvd5ep7k7fbzqe/"+idxStr+".png";
-    
-    const txnHash4 = await walletClient.cannedbiCreateToken(owner,
-        "Cannedbi NFT #2","Awesome Cannedbi #2",
-        uri_cap,uri_cap,uri_decap,
-        getRandomInt(10),getRandomInt(10),getRandomInt(10),getRandomInt(10));
-    console.log("=== cannedbiCreateToken Result ===");
+    const txnHash4 = await walletClient.cannedbiCreateCollection(owner,owner.address().hex(),
+       "Cannedbi NFT Collection no.2","Awesome Cannedbi Collection #2","https://cannedbi.com");
+    console.log("=== cannedbiCreateCollection Result ===");
     console.log(txnHash4);
-    await client.waitForTransaction(txnHash4, { checkSuccess: true }); // <:!:publish
+
+    // const idx = 2;  
+    // const idxStr = zeroPad(idx, 4);
+    // const uri_cap = "ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/"+idxStr+".png";
+    // const uri_decap = "ipfs://bafybeibcbiix4xlnydklnfg3ympksr6cio4d2muwmulznvd5ep7k7fbzqe/"+idxStr+".png";
+    
+    // const txnHash4 = await walletClient.cannedbiCreateToken(owner,
+    //     "Cannedbi NFT #2","Awesome Cannedbi #2",
+    //     uri_cap,uri_cap,uri_decap,
+    //     getRandomInt(10),getRandomInt(10),getRandomInt(10),getRandomInt(10));
+    // console.log("=== cannedbiCreateToken Result ===");
+    // console.log(txnHash4);
+    // await client.waitForTransaction(txnHash4, { checkSuccess: true }); // <:!:publish
   
 
 })();

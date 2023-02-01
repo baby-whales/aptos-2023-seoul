@@ -19,6 +19,15 @@ import { CAN_COIN_ADDRESS , CANNEDBI_NFT_ADDRESS } from "./common"
 //     payload: Gen.EntryFunctionPayload;
 //     options?: Partial<Gen.SubmitTransactionRequest>;
 // }
+function makeid(length) {
+  var result           = '';
+  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxy';
+  var charactersLength = characters.length;
+  for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
 
 export interface TokenId {
     property_version: string;
@@ -489,6 +498,43 @@ export class WalletClient {
     return pendingTxn.hash;
   }
 
+  // public entry fun init_collection(
+  //   account: &signer,
+  //   royalty_payee_address:address,
+  //   collection_name: String,
+  //   collection_description: String,
+  //   collection_uri: String,
+  //   seeds: vector<u8>
+  async cannedbiCreateCollection(
+    account: AptosAccount,
+    royalty_payee_address: MaybeHexString,
+    collection_name: String,
+    collection_description: String,
+    collection_uri : String): Promise<string> {
+    const funcName = `${CANNEDBI_NFT_ADDRESS}::character::init_collection`;
+    
+    const seed = ""+makeid(5);
+
+    const rawTxn = await this.aptosClient.generateTransaction(account.address(), {
+        function: funcName,
+        type_arguments: [],
+        arguments: [royalty_payee_address, collection_name,collection_description,
+          collection_uri,seed],
+      });
+  
+    const bcsTxn = await this.aptosClient.signTransaction(account, rawTxn);
+    const pendingTxn = await this.aptosClient.submitTransaction(bcsTxn);
+  
+    //this.aptosClient.waitForTransactionWithResult(pendingTxn.hash, { checkSuccess : true});
+    const results = await this.aptosClient.waitForTransactionWithResult(pendingTxn.hash);
+    console.log("cannedbiCreateCollection results:",results);
+
+    //const addr = results['changes'][2]['address'];
+    //console.log("cannedbiCreateCollection token_machine_addr:",addr);
+
+    return pendingTxn.hash;
+  }
+
   // public entry fun create_token(creator: &signer,
   //   token_name : string::String,
   //   description : string::String,
@@ -498,18 +544,20 @@ export class WalletClient {
   //   stat1 :u8,stat2 :u8,stat3 :u8,stat4 :u8)
   async cannedbiCreateToken(
     account: AptosAccount,
+    token_machine: MaybeHexString,
     token_name: String,
     description: String,
     token_uri : String,
     uri_cap : String,
     uri_decap : String,
     stat1 : Uint8,stat2: Uint8,stat3: Uint8,stat4: Uint8): Promise<string> {
-    const funcName = `${CANNEDBI_NFT_ADDRESS}::character::create_token`;
+    const funcName = `${CANNEDBI_NFT_ADDRESS}::character::mint_script`;
     
     const rawTxn = await this.aptosClient.generateTransaction(account.address(), {
         function: funcName,
         type_arguments: [],
-        arguments: [token_name, description,token_uri,uri_cap,uri_decap,stat1,stat2,stat3,stat4],
+        arguments: [token_machine,token_name, description,token_uri,uri_cap,uri_decap,
+          stat1,stat2,stat3,stat4],
       });
   
     const bcsTxn = await this.aptosClient.signTransaction(account, rawTxn);

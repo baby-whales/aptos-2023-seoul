@@ -45,7 +45,7 @@ aptos move publish --named-addresses admin_addr=default,can_coin=default,cannedb
 ```
 
 ```bash
-more config.yaml
+more .aptos/config.yaml
 ---
 profiles:
   default:
