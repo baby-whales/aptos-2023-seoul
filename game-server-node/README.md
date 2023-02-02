@@ -9,7 +9,7 @@ The message will be signed with client's private key, then send back to server. 
 Finally by comparing nonces, the server authorizes the client. 
 Message Signing/decrypting can be done by using Ed22519.
 
-```json
+```
 {
     message:
      {
