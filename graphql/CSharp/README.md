@@ -1,4 +1,4 @@
-# CSharp GraphQL(not progress...)
+# CSharp GraphQL(now progress...)
 This is `CSharp` directory.
 
 ## How to install Preparations?
