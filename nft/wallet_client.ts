@@ -12,7 +12,7 @@ import { AnyMxRecord } from "dns";
 //import { TransactionBuilder, TransactionBuilderABI, TxnBuilderTypes } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
 //import { PendingTransaction } from "./dist/index" 
 
-import { CAN_COIN_ADDRESS , CANNEDBI_NFT_ADDRESS } from "./common"
+import { CAN_COIN_ADDRESS , CANNEDBI_NFT_ADDRESS , CANNEDBI_BADGE_ADDRESS} from "./common"
 
 // export interface TxnRequestRaw {
 //     sender: MaybeHexString;
@@ -566,5 +566,79 @@ export class WalletClient {
   
     return pendingTxn.hash;
   }
+
+  // public entry fun init_collection(
+  //   account: &signer,
+  //   royalty_payee_address:address,
+  //   collection_name: String,
+  //   collection_description: String,
+  //   collection_uri: String,
+  //   max_supply : u64,
+  //   total_supply : u64,
+  //   seeds: vector<u8>
+  async cannedbiBadgeCreateCollection(
+    account: AptosAccount,
+    royalty_payee_address: MaybeHexString,
+    collection_name: String,
+    collection_description: String,
+    collection_uri : String,
+    max_supply : AnyNumber,
+    total_supply : AnyNumber,
+    ): Promise<string> {
+    const funcName = `${CANNEDBI_BADGE_ADDRESS}::badge::init_collection`;
+    
+    const seed = ""+makeid(5);
+
+    const rawTxn = await this.aptosClient.generateTransaction(account.address(), {
+        function: funcName,
+        type_arguments: [],
+        arguments: [royalty_payee_address, collection_name,collection_description,
+          collection_uri,max_supply,total_supply,seed],
+      });
+  
+    const bcsTxn = await this.aptosClient.signTransaction(account, rawTxn);
+    const pendingTxn = await this.aptosClient.submitTransaction(bcsTxn);
+  
+    //this.aptosClient.waitForTransactionWithResult(pendingTxn.hash, { checkSuccess : true});
+    const results = await this.aptosClient.waitForTransactionWithResult(pendingTxn.hash);
+    console.log("cannedbiBadgeCreateCollection results:",results);
+
+    // this is the address of the newly created collection
+    const addr = results['changes'][2]['address'];
+    console.log("cannedbiBadgeCreateCollection token_machine_addr:",addr);
+
+    return addr;//pendingTxn.hash;
+  }  
+
+  // public entry fun mint_genesis_script_v1(
+  //   receiver: &signer,
+  //   token_machine: address,
+  //   token_name : string::String,
+  //   description : string::String,
+  //   token_uri : string::String,
+  //   max_supply : u64,
+  //   stat1 :u8,stat2 :u8,stat3 :u8,stat4 :u8
+  async mintGenesisCannedbiBadgeToken(
+    account: AptosAccount,
+    token_machine: MaybeHexString,
+    token_name: String,
+    description: String,
+    token_uri : String,
+    max_supply : AnyNumber,
+    stat1 : Uint8,stat2: Uint8,stat3: Uint8,stat4: Uint8): Promise<string> {
+    const funcName = `${CANNEDBI_BADGE_ADDRESS}::badge::mint_genesis_script_v1`;
+    
+    const rawTxn = await this.aptosClient.generateTransaction(account.address(), {
+        function: funcName,
+        type_arguments: [],
+        arguments: [token_machine,token_name, description,token_uri,max_supply,
+          stat1,stat2,stat3,stat4],
+      });
+  
+    const bcsTxn = await this.aptosClient.signTransaction(account, rawTxn);
+    const pendingTxn = await this.aptosClient.submitTransaction(bcsTxn);
+  
+    return pendingTxn.hash;
+  }  
 }
 
