@@ -18,7 +18,8 @@ module cannedbi_nft::character {
     //use aptos_framework::event::{EventHandle};
     
 
-    use aptos_token::token::{Self,TokenDataId,TokenId};
+    //use aptos_token::token::{Self,TokenDataId,TokenId};
+    use aptos_token::token::{Self,TokenDataId};
     
     //use aptos_framework::coin;
     use aptos_framework::coin::{Self};
@@ -319,30 +320,30 @@ module cannedbi_nft::character {
         token::mutate_tokendata_uri(&resource_signer_from_cap,token_data_id,uri);
     }
 
-    /// mutate owner's token's property
-    /// to use level up things
-    public entry fun mutate_one_token(
-        account: &signer,
-        token_machine: address,
-        token_owner: address,
-        token_id: TokenId,
-        keys: vector<String>,
-        values: vector<vector<u8>>,
-        types: vector<String>,
-    )acquires ResourceInfo
-    {
-        let account_addr = signer::address_of(account);
-        let resource_data = borrow_global<ResourceInfo>(token_machine);
-        assert!(resource_data.source == account_addr, INVALID_SIGNER);
-        let resource_signer_from_cap = account::create_signer_with_capability(&resource_data.resource_cap);
-        // account: &signer,
-        // token_owner: address,
-        // token_id: TokenId,
-        // keys: vector<String>,
-        // values: vector<vector<u8>>,
-        // types: vector<String>,
-        token::mutate_one_token(&resource_signer_from_cap,token_owner,token_id,keys,values,types);
-    }
+    // mutate owner's token's property
+    // to use level up things
+    // public entry fun mutate_one_token(
+    //     account: &signer,
+    //     token_machine: address,
+    //     token_owner: address,
+    //     token_id: TokenId,
+    //     keys: vector<String>,
+    //     values: vector<vector<u8>>,
+    //     types: vector<String>,
+    // )acquires ResourceInfo
+    // {
+    //     let account_addr = signer::address_of(account);
+    //     let resource_data = borrow_global<ResourceInfo>(token_machine);
+    //     assert!(resource_data.source == account_addr, INVALID_SIGNER);
+    //     let resource_signer_from_cap = account::create_signer_with_capability(&resource_data.resource_cap);
+    //     // account: &signer,
+    //     // token_owner: address,
+    //     // token_id: TokenId,
+    //     // keys: vector<String>,
+    //     // values: vector<vector<u8>>,
+    //     // types: vector<String>,
+    //     token::mutate_one_token(&resource_signer_from_cap,token_owner,token_id,keys,values,types);
+    // }
 
     #[test_only]
     public fun set_up_test(
@@ -561,59 +562,59 @@ module cannedbi_nft::character {
     }    
 
 
-    #[test(creator = @0xb0c, minter = @0xc0c, token_machine=@0x1,aptos_framework = @aptos_framework)]
-    public entry fun test_token_machine6(
-            creator: &signer,
-            aptos_framework: &signer,
-            minter: &signer,
-            token_machine: &signer
-        ) acquires ResourceInfo,TokenMachine
-    {
-        set_up_test(creator,aptos_framework,minter,token_machine,80);
-        aptos_framework::timestamp::update_global_time_for_test_secs(102);
+    // #[test(creator = @0xb0c, minter = @0xc0c, token_machine=@0x1,aptos_framework = @aptos_framework)]
+    // public entry fun test_token_machine6(
+    //         creator: &signer,
+    //         aptos_framework: &signer,
+    //         minter: &signer,
+    //         token_machine: &signer
+    //     ) acquires ResourceInfo,TokenMachine
+    // {
+    //     set_up_test(creator,aptos_framework,minter,token_machine,80);
+    //     aptos_framework::timestamp::update_global_time_for_test_secs(102);
 
-        let token_machine_addr = account::create_resource_address(&signer::address_of(creator), b"cannedbi");
+    //     let token_machine_addr = account::create_resource_address(&signer::address_of(creator), b"cannedbi");
 
-        let uri = string::utf8(b"ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/0006.png");
-        let uri_cap = string::utf8(b"ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/0006.png");
-        let uri_decap = string::utf8(b"ipfs://bafybeibcbiix4xlnydklnfg3ympksr6cio4d2muwmulznvd5ep7k7fbzqe/0006.png");
-        let stat1 = 1;
-        let stat2 = 2;
-        let stat3 = 3;
-        let stat4 = 4;
+    //     let uri = string::utf8(b"ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/0006.png");
+    //     let uri_cap = string::utf8(b"ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/0006.png");
+    //     let uri_decap = string::utf8(b"ipfs://bafybeibcbiix4xlnydklnfg3ympksr6cio4d2muwmulznvd5ep7k7fbzqe/0006.png");
+    //     let stat1 = 1;
+    //     let stat2 = 2;
+    //     let stat3 = 3;
+    //     let stat4 = 4;
 
-        let token_name = string::utf8(b"Cannedbi NFT #6");
-        mint_script_v1(
-            minter,
-            token_machine_addr,
-            token_name,//string::utf8(b"Cannedbi NFT #6"),
-            string::utf8(b"Awesome Cannedbi NFT #6"),//description : string::String,
-            uri,//token_uri : string::String,
-            uri_cap,//uri_cap : string::String,
-            uri_decap,//uri_decap : string::String,
-            stat1,stat2,stat3,stat4
-        );
+    //     let token_name = string::utf8(b"Cannedbi NFT #6");
+    //     mint_script_v1(
+    //         minter,
+    //         token_machine_addr,
+    //         token_name,//string::utf8(b"Cannedbi NFT #6"),
+    //         string::utf8(b"Awesome Cannedbi NFT #6"),//description : string::String,
+    //         uri,//token_uri : string::String,
+    //         uri_cap,//uri_cap : string::String,
+    //         uri_decap,//uri_decap : string::String,
+    //         stat1,stat2,stat3,stat4
+    //     );
 
-        //let token_machine_data = borrow_global<TokenMachine>(token_machine); 
-        let collection_name = string::utf8(b"Cannedbi Aptos NFT Collection #1");
-        let token_property_version = 0;// how to get latest version?
-        let token_id = token::create_token_id_raw(token_machine_addr, 
-            collection_name, token_name, token_property_version);
+    //     //let token_machine_data = borrow_global<TokenMachine>(token_machine); 
+    //     let collection_name = string::utf8(b"Cannedbi Aptos NFT Collection #1");
+    //     let token_property_version = 0;// how to get latest version?
+    //     let token_id = token::create_token_id_raw(token_machine_addr, 
+    //         collection_name, token_name, token_property_version);
         
-        // account: &signer,
-        // token_machine: address,
-        // token_owner: address,
-        // token_id: TokenId,
-        // keys: vector<String>,
-        // values: vector<vector<u8>>,
-        // types: vector<String>,
-        mutate_one_token(creator,
-            token_machine_addr,
-            signer::address_of(minter),
-            token_id,
-            vector::empty(),
-            vector::empty(),
-            vector::empty()
-        );
-    }  
+    //     // account: &signer,
+    //     // token_machine: address,
+    //     // token_owner: address,
+    //     // token_id: TokenId,
+    //     // keys: vector<String>,
+    //     // values: vector<vector<u8>>,
+    //     // types: vector<String>,
+    //     mutate_one_token(creator,
+    //         token_machine_addr,
+    //         signer::address_of(minter),
+    //         token_id,
+    //         vector::empty(),
+    //         vector::empty(),
+    //         vector::empty()
+    //     );
+    // }  
 }

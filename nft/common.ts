@@ -8,5 +8,5 @@ export const FAUCET_URL = process.env.APTOS_FAUCET_URL || "https://faucet.devnet
 
 export const aptosCoinStore = "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>";
 
-export const CAN_COIN_ADDRESS = "0xd9484c532cfc92f3bb375cfed6eba8046b305c130542ce993bf901293af00dd0";
-export const CANNEDBI_NFT_ADDRESS = "0xd9484c532cfc92f3bb375cfed6eba8046b305c130542ce993bf901293af00dd0";
+export const CAN_COIN_ADDRESS = "0x7791c51653f89f9c07bb5823d0fbebd2633908738cba76d2c9f4ff3ad4d88f5e";
+export const CANNEDBI_NFT_ADDRESS = "0x7791c51653f89f9c07bb5823d0fbebd2633908738cba76d2c9f4ff3ad4d88f5e";

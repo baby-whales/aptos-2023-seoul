@@ -17,8 +17,8 @@ import { WalletClient , CoinType } from "./wallet_client";
 //const PRIVATE_KEY = "0x059476ec5425e7878cd6d85250cf66a17539e9ccea89e25a00292c7a102a53af";
 //const PUBLIC_ADDRESS = "0x0f51874fefd26cc8b40a6632057bf34bf2a22bbfe6cdf46838a31dcf598f1b34";
 
-const PRIVATE_KEY = "0x56d1e41a8090ca443ee4f9e43f32d014985587058c948862b393bf3107c3c377";
-const PUBLIC_ADDRESS = "d9484c532cfc92f3bb375cfed6eba8046b305c130542ce993bf901293af00dd0";
+const PRIVATE_KEY = "0xad01c6a90086c8a739d3f23cd3936c03c1da3c6fbbd415094c6a881ef732130d";
+const PUBLIC_ADDRESS = "7791c51653f89f9c07bb5823d0fbebd2633908738cba76d2c9f4ff3ad4d88f5e";
 
 function getRandomInt(max: number) {
     return Math.floor(Math.random() * max);
@@ -114,18 +114,18 @@ function zeroPad(num :number, places:number) {
       console.log(`Owner CAN: ${canBalance}`);
 
     const newTokenMachineAddr = await walletClient.cannedbiCreateCollection(owner,owner.address().hex(),
-       "Cannedbi NFT Collection no.2","Awesome Cannedbi Collection #2","https://cannedbi.com");
+       "Cannedbi Character NFT Collection #1","Awesome Cannedbi Character Collection #1","https://cannedbi.com");
     console.log("=== cannedbiCreateCollection Result ===");
     console.log("newTokenMachineAddr:"+newTokenMachineAddr);
 
-    const idx = 2;  
+    const idx = 1;  
     const idxStr = zeroPad(idx, 4);
     const uri_cap = "ipfs://bafybeihq6s5paetbdh33hdxypua7tvchklfoymkaw7vpz4gzsc63fcupn4/"+idxStr+".png";
     const uri_decap = "ipfs://bafybeibcbiix4xlnydklnfg3ympksr6cio4d2muwmulznvd5ep7k7fbzqe/"+idxStr+".png";
     
     const txnHash4 = await walletClient.cannedbiCreateToken(owner,
         newTokenMachineAddr,
-        "Cannedbi NFT #2","Awesome Cannedbi #2",
+        "Cannedbi Character NFT #1","Awesome Cannedbi Character#1",
         uri_cap,uri_cap,uri_decap,
         getRandomInt(10),getRandomInt(10),getRandomInt(10),getRandomInt(10));
     console.log("=== cannedbiCreateToken Result ===");
