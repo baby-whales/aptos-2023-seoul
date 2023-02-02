@@ -1,12 +1,15 @@
-Now `TypeScript` directory.
-```npm i```
+# TypeScript GraphQL
+This is `TypeScript` directory.
 
-How to execute `getCurrentTokenOwnership.ts`
-```ts-node getCurrentTokenOwnership```
+## How to install dependencies?
+Enter the `npm i` command in the command window.
 
-This script ...
+In the `.ts` code, enter your account address in `<OWNER_ADDRESS_HERE>` and the collection name of the token you want to obtain in `<TOKEN_COLLECTION_NAME_HERE>`.
 
-How to execute `getCurrentTokenOwnership_by_collection.ts`
-```ts-node getCurrentTokenOwnership_by_collection```
+## How to execute codes?
 
-This script ...
+### How to execute `getCurrentTokenOwnership.ts`?
+Enter the `tsc ./src/getCurrentTokenOwnership.ts` command in the command window.
+
+### How to execute `getCurrentTokenOwnership_by_collection.ts`?
+Enter the `tsc ./src/getCurrentTokenOwnership_by_collection.ts` command in the command window.
