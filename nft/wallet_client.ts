@@ -1,6 +1,6 @@
 
 
-//import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS  } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
+//import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS  } from "./dist/index";
 import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS  } from "./dist/index";
 import { ApiError as AptosApiError } from "./dist/index";
 import { Types as AptosTypes } from "./dist/index";
@@ -9,7 +9,7 @@ import { NODE_URL, FAUCET_URL } from "./common";
 import * as Gen from "./generated";
 import { AnyNumber, Bytes, Uint8 , Uint16 } from "./bcs";
 import { AnyMxRecord } from "dns";
-//import { TransactionBuilder, TransactionBuilderABI, TxnBuilderTypes } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
+//import { TransactionBuilder, TransactionBuilderABI, TxnBuilderTypes } from "./dist/index";
 //import { PendingTransaction } from "./dist/index" 
 
 import { CAN_COIN_ADDRESS , CANNEDBI_NFT_ADDRESS , CANNEDBI_BADGE_ADDRESS} from "./common"

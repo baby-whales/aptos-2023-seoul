@@ -7,11 +7,11 @@ import dotenv from "dotenv";
 dotenv.config();
 
 //import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS } from "aptos";
-import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS  } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
+import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, BCS  } from "./dist/index";
 //import { OptionalTransactionArgs } from "aptos";
-import { OptionalTransactionArgs } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
+import { OptionalTransactionArgs } from "./dist/index";
 //import { HexString,MaybeHexString } from "aptos";
-import { HexString,MaybeHexString } from "../../aptos-core/ecosystem/typescript/sdk/dist/index";
+import { HexString,MaybeHexString } from "./dist/index";
 
 import { NODE_URL, FAUCET_URL } from "./common";
 import { AnyNumber, Bytes, Uint8 , Uint16 } from "./bcs";
