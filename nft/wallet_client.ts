@@ -545,7 +545,7 @@ export class WalletClient {
   //   stat1 :u8,stat2 :u8,stat3 :u8,stat4 :u8)
   async cannedbiCreateToken(
     account: AptosAccount,
-    token_machine: MaybeHexString,
+    token_machine: MaybeHexString,//CANNEDBI_NFT_MACHINE_ADDRESS
     token_name: String,
     description: String,
     token_uri : String,
@@ -620,7 +620,7 @@ export class WalletClient {
   //   stat1 :u8,stat2 :u8,stat3 :u8,stat4 :u8
   async mintGenesisCannedbiBadgeToken(
     account: AptosAccount,
-    token_machine: MaybeHexString,
+    token_machine: MaybeHexString,//CANNEDBI_BADGE_MACHINE_ADDRESS
     token_name: String,
     description: String,
     token_uri : String,

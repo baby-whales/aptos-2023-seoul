@@ -4,6 +4,46 @@
 * https://nft.storage/docs/how-to/store-directory/#creating-a-project
 
 
+## new badge files 3
+
+```bash
+node storeDirectory.mjs /Users/cpp.wdshin/work-aptos/aptos-2023-seoul/nft/resources/new_badges_png
+```
+
+* Q -> 0
+* R -> 1
+* G -> 2
+* B -> 3
+* P -> 4
+* BR -> 5
+
+```bash
+storing file(s) from [object Object]
+{ cid: 'bafybeicogarequvz32y64fln3hwjoeccanjbfpkgnpppnuagipypo773ji' }
+{
+  cid: 'bafybeicogarequvz32y64fln3hwjoeccanjbfpkgnpppnuagipypo773ji',
+  deals: [],
+  size: 71000,
+  pin: {
+    cid: 'bafybeicogarequvz32y64fln3hwjoeccanjbfpkgnpppnuagipypo773ji',
+    created: 2023-02-02T06:47:52.261Z,
+    size: 71000,
+    status: 'pinned'
+  },
+  created: 2023-02-02T06:47:52.261Z
+}
+```
+
+* ipfs://bafybeicogarequvz32y64fln3hwjoeccanjbfpkgnpppnuagipypo773ji/0.png
+* 0 -> QUESTION
+* ipfs://bafybeicogarequvz32y64fln3hwjoeccanjbfpkgnpppnuagipypo773ji/1.png
+* 1 -> RED
+* 2 -> GREEN
+* 3 -> BLUE
+* 4 -> PURPLE
+* 5 -> BROWN
+
+
 ## new badge files 2
 
 ```bash
