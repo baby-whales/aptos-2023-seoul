@@ -4,6 +4,8 @@ This is `JavaScript` directory.
 ## How to install dependencies?
 Enter the `npm i` command in the command window.
 
+In the `.js` code, enter your account address in `<OWNER_ADDRESS_HERE>` and the collection name of the token you want to obtain in `<TOKEN_COLLECTION_NAME_HERE>`.
+
 ## How to execute codes?
 
 ### How to execute `getCurrentTokenOwnership.js`?
