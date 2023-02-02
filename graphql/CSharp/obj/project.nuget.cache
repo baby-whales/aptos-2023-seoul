@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "dgSpecHash": "y7aEQDAfVHujbg3b781bxQmXwwwv34prkv6k6uPCto7imhOfJAG+Cc1HJxCRmgHTRC6bEgH5CibHHco3p1c+tg==",
+  "success": true,
+  "projectFilePath": "/Users/kimchan/2023/01/babywales/aptos-2023-seoul/graphql/CSharp/CSharp.csproj",
+  "expectedPackageFiles": [
+    "/Users/kimchan/.nuget/packages/graphql/7.2.2/graphql.7.2.2.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/graphql-parser/8.1.0/graphql-parser.8.1.0.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/graphql.client/5.1.1/graphql.client.5.1.1.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/graphql.client.abstractions/5.1.1/graphql.client.abstractions.5.1.1.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/graphql.client.abstractions.websocket/5.1.1/graphql.client.abstractions.websocket.5.1.1.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/graphql.client.serializer.newtonsoft/5.1.1/graphql.client.serializer.newtonsoft.5.1.1.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/graphql.dataloader/7.2.2/graphql.dataloader.7.2.2.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/graphql.memorycache/7.2.2/graphql.memorycache.7.2.2.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/graphql.microsoftdi/7.2.2/graphql.microsoftdi.7.2.2.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/graphql.newtonsoftjson/7.2.2/graphql.newtonsoftjson.7.2.2.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/graphql.primitives/5.1.1/graphql.primitives.5.1.1.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/graphql.systemtextjson/7.2.2/graphql.systemtextjson.7.2.2.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/microsoft.csharp/4.7.0/microsoft.csharp.4.7.0.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/microsoft.extensions.caching.abstractions/3.1.0/microsoft.extensions.caching.abstractions.3.1.0.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/microsoft.extensions.caching.memory/3.1.0/microsoft.extensions.caching.memory.3.1.0.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/3.1.0/microsoft.extensions.dependencyinjection.abstractions.3.1.0.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/microsoft.extensions.logging.abstractions/3.1.0/microsoft.extensions.logging.abstractions.3.1.0.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/microsoft.extensions.options/3.1.0/microsoft.extensions.options.3.1.0.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/microsoft.extensions.primitives/3.1.0/microsoft.extensions.primitives.3.1.0.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/newtonsoft.json/13.0.2/newtonsoft.json.13.0.2.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/system.buffers/4.5.1/system.buffers.4.5.1.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/system.componentmodel.annotations/4.7.0/system.componentmodel.annotations.4.7.0.nupkg.sha512",
+    "/Users/kimchan/.nuget/packages/system.reactive/5.0.0/system.reactive.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

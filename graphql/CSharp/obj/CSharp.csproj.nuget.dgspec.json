@@ -1,0 +1,99 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/kimchan/2023/01/babywales/aptos-2023-seoul/graphql/CSharp/CSharp.csproj": {}
+  },
+  "projects": {
+    "/Users/kimchan/2023/01/babywales/aptos-2023-seoul/graphql/CSharp/CSharp.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/kimchan/2023/01/babywales/aptos-2023-seoul/graphql/CSharp/CSharp.csproj",
+        "projectName": "CSharp",
+        "projectPath": "/Users/kimchan/2023/01/babywales/aptos-2023-seoul/graphql/CSharp/CSharp.csproj",
+        "packagesPath": "/Users/kimchan/.nuget/packages/",
+        "outputPath": "/Users/kimchan/2023/01/babywales/aptos-2023-seoul/graphql/CSharp/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/kimchan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "GraphQL": {
+              "target": "Package",
+              "version": "[7.2.2, )"
+            },
+            "GraphQL.Client": {
+              "target": "Package",
+              "version": "[5.1.1, )"
+            },
+            "GraphQL.Client.Serializer.Newtonsoft": {
+              "target": "Package",
+              "version": "[5.1.1, )"
+            },
+            "GraphQL.DataLoader": {
+              "target": "Package",
+              "version": "[7.2.2, )"
+            },
+            "GraphQL.MemoryCache": {
+              "target": "Package",
+              "version": "[7.2.2, )"
+            },
+            "GraphQL.MicrosoftDI": {
+              "target": "Package",
+              "version": "[7.2.2, )"
+            },
+            "GraphQL.NewtonsoftJson": {
+              "target": "Package",
+              "version": "[7.2.2, )"
+            },
+            "GraphQL.SystemTextJson": {
+              "target": "Package",
+              "version": "[7.2.2, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.102/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
