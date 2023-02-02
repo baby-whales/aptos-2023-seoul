@@ -639,6 +639,50 @@ export class WalletClient {
     const pendingTxn = await this.aptosClient.submitTransaction(bcsTxn);
   
     return pendingTxn.hash;
-  }  
+  }
+  // public entry fun mutate_tokendata_uri(
+  //   account: &signer,
+  //   token_machine: address,
+  //   token_name: String,
+  //   uri: String, 
+  async mutateBadgeTokenDataUri(
+    account: AptosAccount,
+    token_machine: MaybeHexString,//CANNEDBI_BADGE_MACHINE_ADDRESS
+    token_name: String,
+    token_uri : String ): Promise<string> {
+    const funcName = `${CANNEDBI_BADGE_ADDRESS}::badge::mutate_tokendata_uri`;
+    
+    const rawTxn = await this.aptosClient.generateTransaction(account.address(), {
+        function: funcName,
+        type_arguments: [],
+        arguments: [token_machine,token_name, token_uri],
+      });
+  
+    const bcsTxn = await this.aptosClient.signTransaction(account, rawTxn);
+    const pendingTxn = await this.aptosClient.submitTransaction(bcsTxn);
+  
+    return pendingTxn.hash;
+  }
+  // public entry fun mint_script_v1(
+  //   receiver: &signer,
+  //   token_machine: address,
+  //   token_name : string::String,
+  async mintBadgeToken(
+    account: AptosAccount,
+    token_machine: MaybeHexString,//CANNEDBI_BADGE_MACHINE_ADDRESS
+    token_name: String ): Promise<string> {
+    const funcName = `${CANNEDBI_BADGE_ADDRESS}::badge::mint_script_v1`;
+    
+    const rawTxn = await this.aptosClient.generateTransaction(account.address(), {
+        function: funcName,
+        type_arguments: [],
+        arguments: [token_machine,token_name],
+      });
+  
+    const bcsTxn = await this.aptosClient.signTransaction(account, rawTxn);
+    const pendingTxn = await this.aptosClient.submitTransaction(bcsTxn);
+  
+    return pendingTxn.hash;
+  }     
 }
 
