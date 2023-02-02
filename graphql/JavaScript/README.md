@@ -1,9 +1,13 @@
 # JavaScript GraphQL
-Now `JavaScript` directory.
-`npm i`
+This is `JavaScript` directory.
 
-How to execute `getCurrentTokenOwnership.js`?
-`node getCurrentTokenOwnership.js`
+## How to install dependencies?
+Enter the `npm i` command in the command window.
 
-How to execute `getCurrentTokenOwnership_by_collection.js`?
-`node getCurrentTokenOwnership_by_collection.js`
+## How to execute codes?
+
+### How to execute `getCurrentTokenOwnership.js`?
+Enter the `node getCurrentTokenOwnership.js` command in the command window.
+
+### How to execute `getCurrentTokenOwnership_by_collection.js`?
+Enter the `node getCurrentTokenOwnership_by_collection.js` command in the command window.
