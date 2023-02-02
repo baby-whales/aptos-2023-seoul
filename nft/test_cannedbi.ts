@@ -145,18 +145,18 @@ function zeroPad(num :number, places:number) {
     // console.log("newTokenMachineAddr:"+newBadgeTokenMachineAddr);
     // //0x364c6239887d0bb6628c18c5823b1a84614987f57f8fc7b4358836e5f94e74af
 
-    // const idx = 2;  
+    const idx = 0;  
     
-    // const badge_uri="ipfs://bafybeicogarequvz32y64fln3hwjoeccanjbfpkgnpppnuagipypo773ji/"+idx+".png";
+    const badge_uri="ipfs://bafybeicogarequvz32y64fln3hwjoeccanjbfpkgnpppnuagipypo773ji/"+idx+".png";
 
-    // const txnHash4 = await walletClient.mintGenesisCannedbiBadgeToken(owner,
-    //   CANNEDBI_BADGE_MACHINE_ADDRESS,
-    //     "Cannedbi Badge NFT #2","Awesome Cannedbi Badge #2 - GREEN GEM",
-    //     badge_uri,
-    //     100000,
-    //     getRandomInt(10),getRandomInt(10),getRandomInt(10),getRandomInt(10));
-    // console.log("=== cannedbiCreateToken Result ===");
-    // const txnHash4Result = await client.waitForTransactionWithResult(txnHash4); // <:!:publish
-    // console.log(txnHash4Result);
+    const txnHash4 = await walletClient.mintGenesisCannedbiBadgeToken(owner,
+      CANNEDBI_BADGE_MACHINE_ADDRESS,
+        "Cannedbi Badge NFT #0","Awesome Cannedbi Badge #0 - QUESTION GEM",
+        badge_uri,
+        100000,
+        getRandomInt(10),getRandomInt(10),getRandomInt(10),getRandomInt(10));
+    console.log("=== cannedbiCreateToken Result ===");
+    const txnHash4Result = await client.waitForTransactionWithResult(txnHash4); // <:!:publish
+    console.log(txnHash4Result);
 
 })();
