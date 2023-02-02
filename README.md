@@ -2,11 +2,11 @@
 
 ## Project 'Cannedbi'
 
-```
-👉 프로젝트 ‘캔드비’는 GameFi 모델을 가진 메타버스 형식의 web 플랫폼과 인큐베이팅 기능을 가지고 있는 DAPP으로 구성되어 있는 ‘디지털 펫 프로젝트’입니다.
 
-Project 'Cannedbi’ is a ‘digital pet project’ consisting of a metaverse web platform with a GameFi model and a DAPP with incubation Function.
-```
+> 👉 프로젝트 ‘캔드비’는 GameFi 모델을 가진 메타버스 형식의 web 플랫폼과 인큐베이팅 기능을 가지고 있는 DAPP으로 구성되어 있는 ‘디지털 펫 프로젝트’입니다.
+
+> Project 'Cannedbi’ is a ‘digital pet project’ consisting of a metaverse web platform with a GameFi model and a DAPP with incubation Function.
+
 
 * [Why Cannedbi?](https://docs.google.com/presentation/d/1uqxYQPt9i5Zitib9lb-qeh9kBWpWCYVd8Op1bKWhrRE)
 
