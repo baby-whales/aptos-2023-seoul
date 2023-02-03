@@ -19,7 +19,8 @@
 ## Aptos Seoul Hack
 
 * [Aptos Seoul Hack 2023](https://aptosfoundation.org/events/seoul-hack-2023)
-
+* [Presentation of DOI 27% Studio](https://docs.google.com/presentation/d/1rNiU68rSFJNBeI7tRi67x1w1PCx2lMPzDbH74_9JxnE/)
+  
 ## Technology Documents
 
 * [Cannedbi Aptos Seoul 2023 Tech](https://docs.google.com/presentation/d/1xIhvMTU3fF9s27l4Ng2mpe1-l5-dqySFMae2pAinH-g/edit#slide=id.p)
