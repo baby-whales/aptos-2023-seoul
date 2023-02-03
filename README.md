@@ -43,6 +43,10 @@
 
 * [README on game server side](game-server-node/README.md)
 
+### query by GraphQL
+
+* [README on graphQL](graphql/README.md)
+  
 ### Rust chatting server (WIP)
 
 * plan to implement backend servers in rust.(work in progress)
