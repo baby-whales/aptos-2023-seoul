@@ -1,7 +1,10 @@
 # graphql directory
 
-## Preparations
-### .NET CORE SDK
+## Category
+There are three directories.
+- JavaScript
+- TypeScript
+- C# (work in progress)
 
 ## How to execute codes?
-Enter the `dotnet run` command in the command window.
+Please refer to the `README.md` in each directory.
