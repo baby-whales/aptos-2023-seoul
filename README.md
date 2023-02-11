@@ -2,6 +2,8 @@
 
 * [Playable Demo](https://ljm463.itch.io/cannedbiworldtest)
 
+* ![Playing Video](images/ezgif.com-video-to-gif%20(1).gif)
+
 ## Project 'Cannedbi'
 
 
