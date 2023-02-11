@@ -1,5 +1,7 @@
 # aptos-2023-seoul
 
+* [Playable Demo](https://ljm463.itch.io/cannedbiworldtest)
+
 ## Project 'Cannedbi'
 
 
